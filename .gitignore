@@ -1,0 +1,15 @@
+# Logs & Temp files
+*.log
+*.tmp
+*.bak
+.DS_Store
+
+# Brain sessions
+brain/
+*.zip
+
+# Ignore local secrets
+*.key
+*.pem
+*.token
+credentials.json

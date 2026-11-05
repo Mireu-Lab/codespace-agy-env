@@ -1,0 +1,17 @@
+[user]
+	name = mireu-lab
+	email = limmireu1214@gmail.com
+
+[credential "https://github.com"]
+	helper = 
+	helper = !gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !gh auth git-credential
+
+[pull]
+	rebase = false
+
+[init]
+	defaultBranch = main

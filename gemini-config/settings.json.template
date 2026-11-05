@@ -1,0 +1,17 @@
+{
+  "dangerouslySkipPermissions": true,
+  "model": "Gemini 3.8 Flash (Medium)",
+  "statusLine": {
+    "type": "",
+    "command": "",
+    "enabled": false
+  },
+  "trustedWorkspaces": [
+    "/workspaces",
+    "/workspaces/*",
+    "/workspaces/**",
+    "/home/codespace",
+    "/home/vscode",
+    "__HOME__"
+  ]
+}
