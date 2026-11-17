@@ -1,0 +1,322 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# agy-sync: Antigravity Multi-Environment Session Synchronizer
+# Priority: Option 1 GitHub Private Repository Git-Sync
+# Target Repository: Mireu-Lab/antigravity-sessions-archive
+# Dual-Logging Standard: Jenkins-style (status.log + processing.log)
+# ==============================================================================
+set -euo pipefail
+
+# ------------------------------------------------------------------------------
+# 1. Dynamic Configuration & Strict Zero-Hardcoding
+# ------------------------------------------------------------------------------
+readonly SCRIPT_NAME="agy-sync"
+readonly HOME_DIR="${HOME:-/home/limmireu1214}"
+readonly AGY_CLI_DIR="${AGY_CLI_DIR:-${HOME_DIR}/.gemini/antigravity-cli}"
+readonly AGY_ARCHIVE_DIR="${AGY_ARCHIVE_DIR:-${HOME_DIR}/.gemini/antigravity-sessions-archive}"
+readonly AGY_REPO_URL="${AGY_REPO_URL:-git@github.com:Mireu-Lab/antigravity-sessions-archive.git}"
+readonly GDRIVE_CONV_DIR="${GDRIVE_CONV_DIR:-${HOME_DIR}/gdrive/conversations_txt}"
+readonly LOCAL_CONV_DIR="${LOCAL_CONV_DIR:-${AGY_CLI_DIR}/conversations_txt}"
+readonly EXPORT_SCRIPT="${EXPORT_SCRIPT:-${HOME_DIR}/.local/bin/export_antigravity_sessions.py}"
+
+# Dual-Logging paths
+readonly LOG_DIR="${LOG_DIR:-${AGY_CLI_DIR}/logs/sync}"
+readonly STATUS_LOG="${STATUS_LOG:-${LOG_DIR}/status.log}"
+readonly PROCESSING_LOG="${PROCESSING_LOG:-${LOG_DIR}/processing.log}"
+
+mkdir -p "${LOG_DIR}" "${AGY_CLI_DIR}"
+
+log_status() {
+    local msg="$1"
+    local ts
+    ts=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+    echo "[${ts}] [STATUS] ${msg}" | tee -a "${STATUS_LOG}" "${PROCESSING_LOG}"
+}
+
+log_detail() {
+    local msg="$1"
+    local ts
+    ts=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+    echo "[${ts}] [DETAIL] ${msg}" >> "${PROCESSING_LOG}"
+}
+
+# ------------------------------------------------------------------------------
+# 2. Repository Initialization & Health Check
+# ------------------------------------------------------------------------------
+ensure_archive_repo() {
+    if [ ! -d "${AGY_ARCHIVE_DIR}/.git" ]; then
+        log_status "Archive repository not found at ${AGY_ARCHIVE_DIR}. Cloning from ${AGY_REPO_URL}..."
+        mkdir -p "${AGY_ARCHIVE_DIR}"
+        if git clone "${AGY_REPO_URL}" "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+            log_status "Successfully cloned archive repository."
+        else
+            log_detail "SSH clone failed. Attempting HTTPS clone via gh CLI..."
+            if command -v gh >/dev/null 2>&1 && gh repo clone Mireu-Lab/antigravity-sessions-archive "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+                log_status "Successfully cloned via gh CLI."
+            else
+                log_status "ERROR: Failed to clone archive repository."
+                return 1
+            fi
+        fi
+    fi
+
+    # Ensure git user config
+    git -C "${AGY_ARCHIVE_DIR}" config user.name "mireu-lab" 2>/dev/null || true
+    git -C "${AGY_ARCHIVE_DIR}" config user.email "limmireu1214@gmail.com" 2>/dev/null || true
+}
+
+# ------------------------------------------------------------------------------
+# 3. Synchronize Active Environment -> Archive Repo (Push Staging)
+# ------------------------------------------------------------------------------
+stage_local_to_archive() {
+    log_status "Step 1/3: Running local session exporter..."
+    if [ -x "${EXPORT_SCRIPT}" ]; then
+        python3 "${EXPORT_SCRIPT}" --force >> "${PROCESSING_LOG}" 2>&1 || {
+            log_detail "Warning: export_antigravity_sessions.py exited non-zero, continuing sync..."
+        }
+    fi
+
+    log_status "Step 2/3: Staging conversations, transcripts and metadata into archive..."
+    python3 - << 'EOF' >> "${PROCESSING_LOG}" 2>&1
+import os, sys, shutil
+from pathlib import Path
+
+archive_dir = Path(os.environ.get("AGY_ARCHIVE_DIR", Path.home() / ".gemini/antigravity-sessions-archive"))
+cli_dir = Path(os.environ.get("AGY_CLI_DIR", Path.home() / ".gemini/antigravity-cli"))
+gdrive_dir = Path(os.environ.get("GDRIVE_CONV_DIR", Path.home() / "gdrive/conversations_txt"))
+local_conv_dir = Path(os.environ.get("LOCAL_CONV_DIR", cli_dir / "conversations_txt"))
+
+archive_conv = archive_dir / "conversations_txt"
+archive_conv.mkdir(parents=True, exist_ok=True)
+
+def safe_copy(src: Path, dst: Path):
+    if not dst.exists() or dst.stat().st_size != src.stat().st_size:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, dst)
+
+# 1. Sync TXT conversations
+if gdrive_dir.exists():
+    for item in gdrive_dir.iterdir():
+        if item.is_file() and item.suffix == ".txt":
+            safe_copy(item, archive_conv / item.name)
+        elif item.is_dir() and not item.name.endswith("_files"):
+            dest_topic = archive_conv / item.name
+            dest_topic.mkdir(parents=True, exist_ok=True)
+            for txt in item.glob("*.txt"):
+                safe_copy(txt, dest_topic / txt.name)
+            for md in item.glob("*.md"):
+                safe_copy(md, dest_topic / md.name)
+
+if local_conv_dir.exists():
+    for item in local_conv_dir.iterdir():
+        if item.is_file() and item.suffix == ".txt":
+            safe_copy(item, archive_conv / item.name)
+        elif item.is_dir() and not item.name.endswith("_files"):
+            dest_topic = archive_conv / item.name
+            dest_topic.mkdir(parents=True, exist_ok=True)
+            for txt in item.glob("*.txt"):
+                safe_copy(txt, dest_topic / txt.name)
+
+# 2. Sync conversation_summaries.db
+db_file = cli_dir / "conversation_summaries.db"
+if db_file.exists():
+    safe_copy(db_file, archive_dir / "conversation_summaries.db")
+
+# 3. Sync brain session transcripts & Markdown artifacts (Strict exclusion of scratch/ > 50MB)
+brain_dir = cli_dir / "brain"
+archive_brain = archive_dir / "brain"
+archive_brain.mkdir(parents=True, exist_ok=True)
+
+if brain_dir.exists():
+    for session_folder in brain_dir.iterdir():
+        if session_folder.is_dir() and len(session_folder.name) == 36 and "-" in session_folder.name:
+            dest_session = archive_brain / session_folder.name
+            logs_dir = session_folder / ".system_generated" / "logs"
+            dest_logs = dest_session / ".system_generated" / "logs"
+
+            if logs_dir.exists():
+                for log_file in ["transcript.jsonl", "transcript_full.jsonl"]:
+                    src_log = logs_dir / log_file
+                    if src_log.exists():
+                        safe_copy(src_log, dest_logs / log_file)
+
+            for md in session_folder.glob("*.md*"):
+                if md.is_file() and md.stat().st_size < 50 * 1024 * 1024:
+                    safe_copy(md, dest_session / md.name)
+EOF
+}
+
+# ------------------------------------------------------------------------------
+# 4. Synchronize Archive Repo -> Active Environment (Pull Restore)
+# ------------------------------------------------------------------------------
+restore_archive_to_local() {
+    log_status "Restoring sessions from archive into local Antigravity environment..."
+    python3 - << 'EOF' >> "${PROCESSING_LOG}" 2>&1
+import os, sys, shutil
+from pathlib import Path
+
+archive_dir = Path(os.environ.get("AGY_ARCHIVE_DIR", Path.home() / ".gemini/antigravity-sessions-archive"))
+cli_dir = Path(os.environ.get("AGY_CLI_DIR", Path.home() / ".gemini/antigravity-cli"))
+local_conv_dir = Path(os.environ.get("LOCAL_CONV_DIR", cli_dir / "conversations_txt"))
+local_conv_dir.mkdir(parents=True, exist_ok=True)
+
+archive_conv = archive_dir / "conversations_txt"
+
+def safe_copy(src: Path, dst: Path):
+    if not dst.exists() or dst.stat().st_size != src.stat().st_size:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, dst)
+
+# 1. Restore conversations_txt
+if archive_conv.exists():
+    for item in archive_conv.iterdir():
+        if item.is_file():
+            safe_copy(item, local_conv_dir / item.name)
+        elif item.is_dir():
+            dest_topic = local_conv_dir / item.name
+            dest_topic.mkdir(parents=True, exist_ok=True)
+            for sub_f in item.iterdir():
+                if sub_f.is_file():
+                    safe_copy(sub_f, dest_topic / sub_f.name)
+
+# 2. Restore conversation_summaries.db if missing or empty
+local_db = cli_dir / "conversation_summaries.db"
+archive_db = archive_dir / "conversation_summaries.db"
+if archive_db.exists():
+    if not local_db.exists() or local_db.stat().st_size == 0:
+        safe_copy(archive_db, local_db)
+
+# 3. Restore brain sessions
+archive_brain = archive_dir / "brain"
+local_brain = cli_dir / "brain"
+local_brain.mkdir(parents=True, exist_ok=True)
+
+if archive_brain.exists():
+    for s_dir in archive_brain.iterdir():
+        if s_dir.is_dir() and len(s_dir.name) == 36 and "-" in s_dir.name:
+            dest_s = local_brain / s_dir.name
+            dest_logs = dest_s / ".system_generated" / "logs"
+
+            src_logs = s_dir / ".system_generated" / "logs"
+            if src_logs.exists():
+                for log_file in ["transcript.jsonl", "transcript_full.jsonl"]:
+                    src_log = src_logs / log_file
+                    if src_log.exists():
+                        safe_copy(src_log, dest_logs / log_file)
+
+            for md in s_dir.glob("*.md*"):
+                if md.is_file():
+                    safe_copy(md, dest_s / md.name)
+EOF
+    log_status "Restoration completed successfully."
+}
+
+# ------------------------------------------------------------------------------
+# 5. Command Handlers
+# ------------------------------------------------------------------------------
+cmd_push() {
+    log_status "=== Starting agy-sync PUSH ==="
+    ensure_archive_repo
+    export AGY_ARCHIVE_DIR AGY_CLI_DIR GDRIVE_CONV_DIR LOCAL_CONV_DIR
+    stage_local_to_archive
+
+    log_status "Step 3/3: Evaluating git changes in archive repository..."
+    local git_status
+    git_status=$(git -C "${AGY_ARCHIVE_DIR}" status --porcelain)
+
+    if [ -z "${git_status}" ]; then
+        log_status "No changes detected. Archive repository is already up-to-date."
+        log_status "=== agy-sync PUSH Finished (No-op) ==="
+        return 0
+    fi
+
+    log_detail "Git changes detected:"
+    log_detail "${git_status}"
+
+    log_status "Committing changes and pushing to ${AGY_REPO_URL}..."
+    git -C "${AGY_ARCHIVE_DIR}" add . >> "${PROCESSING_LOG}" 2>&1
+    local commit_msg="sync(sessions): update antigravity sessions [$(date -u '+%Y-%m-%d %H:%M:%S UTC')]"
+    git -C "${AGY_ARCHIVE_DIR}" commit -m "${commit_msg}" >> "${PROCESSING_LOG}" 2>&1
+
+    # Rebase pull first to prevent conflicts
+    git -C "${AGY_ARCHIVE_DIR}" pull --rebase origin main >> "${PROCESSING_LOG}" 2>&1 || {
+        log_detail "Pull rebase notice (clean or already up to date)."
+    }
+
+    git -C "${AGY_ARCHIVE_DIR}" push origin main >> "${PROCESSING_LOG}" 2>&1
+    log_status "Successfully pushed updated sessions to GitHub."
+    log_status "=== agy-sync PUSH Completed Successfully ==="
+}
+
+cmd_pull() {
+    log_status "=== Starting agy-sync PULL ==="
+    ensure_archive_repo
+
+    log_status "Fetching latest sessions from ${AGY_REPO_URL}..."
+    git -C "${AGY_ARCHIVE_DIR}" pull --rebase origin main >> "${PROCESSING_LOG}" 2>&1 || {
+        log_detail "Warning: git pull rebase encountered non-zero status."
+    }
+
+    export AGY_ARCHIVE_DIR AGY_CLI_DIR LOCAL_CONV_DIR
+    restore_archive_to_local
+    log_status "=== agy-sync PULL Completed Successfully ==="
+}
+
+cmd_status() {
+    ensure_archive_repo
+    echo "================================================================================"
+    echo "Antigravity Multi-Environment Session Synchronizer (agy-sync)"
+    echo "================================================================================"
+    echo "• Archive Directory : ${AGY_ARCHIVE_DIR}"
+    echo "• Active CLI Directory: ${AGY_CLI_DIR}"
+    echo "• Remote Repository: ${AGY_REPO_URL}"
+    echo "• Active Git Branch: $(git -C "${AGY_ARCHIVE_DIR}" branch --show-current 2>/dev/null || echo 'unknown')"
+    echo "• Last Commit      : $(git -C "${AGY_ARCHIVE_DIR}" log -1 --oneline 2>/dev/null || echo 'No commits yet')"
+
+    local txt_count
+    txt_count=$(find "${AGY_ARCHIVE_DIR}/conversations_txt" -name "*.txt" 2>/dev/null | wc -l || echo 0)
+    local brain_count
+    brain_count=$(find "${AGY_ARCHIVE_DIR}/brain" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l || echo 0)
+    echo "• Archived Sessions: ${txt_count} conversation text files, ${brain_count} brain logs"
+
+    if [ -f "${AGY_ARCHIVE_DIR}/conversation_summaries.db" ]; then
+        local db_size
+        db_size=$(du -h "${AGY_ARCHIVE_DIR}/conversation_summaries.db" | cut -f1)
+        echo "• Registry DB Size : ${db_size}"
+    fi
+
+    echo "--------------------------------------------------------------------------------"
+    local status_out
+    status_out=$(git -C "${AGY_ARCHIVE_DIR}" status --short 2>/dev/null || true)
+    if [ -z "${status_out}" ]; then
+        echo "Git Working Tree Status: Clean (All sessions synchronized)"
+    else
+        echo "Git Working Tree Status: Pending changes to push:"
+        echo "${status_out}"
+    fi
+    echo "================================================================================"
+}
+
+# ------------------------------------------------------------------------------
+# 6. CLI Entrypoint
+# ------------------------------------------------------------------------------
+case "${1:-}" in
+    push)
+        cmd_push
+        ;;
+    pull)
+        cmd_pull
+        ;;
+    status)
+        cmd_status
+        ;;
+    *)
+        echo "Usage: ${SCRIPT_NAME} {push|pull|status}"
+        echo ""
+        echo "Commands:"
+        echo "  push   Export and sync local sessions to remote GitHub archive repository"
+        echo "  pull   Pull latest sessions from GitHub archive and restore to local environment"
+        echo "  status Display synchronization state and file inventory"
+        exit 1
+        ;;
+esac

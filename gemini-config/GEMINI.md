@@ -5,11 +5,14 @@
 - **HEAVY 구현 / 시스템 구축 / 실험 구현**: **Golang (Go)** 필수 활용.
   - Python 등 기타 언어 활용 금지 (단, 명시적 사용자 요청 시 예외 적용).
   - Go 프로젝트 작성 시 Target Go Version에 맞춰 호환되는 라이브러리와 모듈(`go.mod`)을 구성하고 `gofmt` 및 엄격한 에러 핸들링 준수.
+- **프로젝트 구현 전반 하드코딩 절대 금지 (Strict Zero-Hardcoding Principle)**:
+  - 소스 코드 및 스크립트 전 계층에서 API Key, 토큰, 비밀번호, IP/포트, 엔드포인트 URL, 로컬 절대 경로, 매직 넘버/스트링 하드코딩 전면 금지.
+  - 모든 환경 설정값과 비밀값은 환경변수(`os.Getenv`), CLI 플래그, 또는 외부 설정 파일(`.env`, `config.yaml`, `config.json`)을 통해 런타임에 동적으로 주입할 것.
 
 ## 2. 인프라(IaC) 및 비용 최우선 원칙 (Infra IaC, Security & Cost First)
 - **IaC (Infrastructure as Code)**: 인프라 프로비저닝 시 **Terraform** 최우선 활용.
 - **TF State**: 로컬 State 관리 금지. 프로젝트/서비스 환경에 맞는 **Remote Backend 및 State Locking** 구성.
-- **보안 (Security)**: Secret 하드코딩 절대 금지. Security Agent 매뉴얼 기반 보안 구성 및 수정.
+- **보안 및 시크릿 관리 (Security & Secrets)**: Secret 하드코딩 절대 금지. 모든 비밀값은 Secret Manager 또는 환경변수로 관리하며 소스 및 상태 파일 커밋을 엄금함. Security Agent 매뉴얼 기반 보안 구성 및 수정.
 - **시스템/인프라 구성**: 컴퓨팅 및 인프라 설계 시 **GCP 계산기(GCP Pricing Calculator)**를 활용하여 최적의 사양과 최저 비용 고안.
 - **실험 구현 프로젝트**: **GCP Cloud Run** 또는 **GCP Compute Engine**을 활용하되, 항상 **COST 최우선**으로 컴퓨팅 자원을 선정.
 - **자원 정리 (Automated Cleanup)**: 실험 및 프로세스 완료 후 미사용 VM/컨테이너가 남지 않도록 즉시 정리하거나 자동 종료(Auto-termination) 설정.
@@ -20,10 +23,12 @@
   - 파이프라인/스크립트 환경: Jenkins 형태(단계별 status.log + 상세 processing.log)로 이원화.
 - **장시간 프로세스 (Long-Running Tasks)**:
   - 실행 시간이 긴 작업 진행 시 **1시간 간격** 및 **프로세스 완료/종료 시점**에 상태(Status) 알림 전송.
-  - 알림 채널: **Google Chat (Webhook)** 또는 **Gmail (SMTP/API)** 활용.
-- **예외 발생 즉시 알림**: 작업 실패 또는 에러 발생 시 1시간을 기다리지 않고 즉시 에러 로그(Tail output)와 함께 알림 전송.
-- **VM 종료 및 디렉토리 정리 규칙 (VM Shutdown & Brain Cleanup)**:
-  - **KST 00:00시 (UTC 15:00시) VM 종료 및 자동 정리**: VM 종료 시점 또는 KST 00:00 정기 스케줄 실행 시 `/home/limmireu1214/.gemini/antigravity-cli/brain` 내 오래된 디렉토리를 Zip 파일(`*.zip`)로 압축 보관하고 원본 디렉토리를 즉시 삭제(Cleanup)할 것.
+  - 모니터링 및 알림 채널: **GCP Cloud Monitoring** (Alerting Policy, Notification Channels 및 로그 기반 지표) 연동 및 활용.
+- **예외 발생 즉시 알림**: 작업 실패 또는 에러 발생 시 1시간을 기다리지 않고 GCP Cloud Monitoring 알람(Log-based Alerting Policy)을 통해 즉시 에러 로그(Tail output)와 함께 알림 트리거.
+- **우선순위 기반 VM 자율 셧다운 및 디렉토리 정리 (Priority-based VM Shutdown & Brain Cleanup)**:
+  - **0순위 (작업 완료 직후 자율 종료)**: 무인 작업 시 `/tmp/antigravity_task.lock`으로 워치독 차단. 작업 100% 완료 후 `safe_vm_shutdown.sh` 자율 호출.
+  - **1순위 (30분 유휴 감지 안전망)**: 크론탭 5분 주기 `idle_shutdown_watchdog.sh`가 SSH, 빌드, 락 부재 시 30분 연속 유휴 확인 후 안전 셧다운 트리거.
+  - **공통 안전 루틴**: Brain zip 압축 & Google Drive(`gdrive:VM_Backup/brain_archive`) 백업, 듀얼 로깅, `systemctl poweroff` 실행. 고정 스케줄 `poweroff_vm.sh`는 제외/비활성화.
 
 ## 4. 머신러닝/딥러닝 및 MLOps (ML/DL & MLOps)
 - **Model & Dataset**: 릴리즈 시 **Hugging Face(HF) Model Hub**에 모델 업로드. 안정성 검증 완료된 데이터셋은 **HF Datasets**에 업로드.

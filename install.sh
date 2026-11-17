@@ -138,10 +138,12 @@ log_info "Deploying GCP Calculator MCP server & maintenance utilities..."
 get_file "bin/gcp-calculator-mcp" "${HOME}/.local/bin/gcp-calculator-mcp"
 get_file "bin/clean_brain_archive.sh" "${HOME}/.local/bin/clean_brain_archive.sh"
 get_file "bin/update_gcp_pricing.sh" "${HOME}/.local/bin/update_gcp_pricing.sh"
+get_file "bin/agy-sync" "${HOME}/.local/bin/agy-sync"
 
 chmod +x "${HOME}/.local/bin/gcp-calculator-mcp"
 chmod +x "${HOME}/.local/bin/clean_brain_archive.sh"
 chmod +x "${HOME}/.local/bin/update_gcp_pricing.sh"
+chmod +x "${HOME}/.local/bin/agy-sync"
 log_success "Binaries deployed to ${HOME}/.local/bin."
 
 # ------------------------------------------------------------------------------
@@ -191,6 +193,7 @@ alias gs="git status -sb"
 alias gl="git log --oneline --graph --decorate -n 15"
 alias agy-clean="$HOME/.local/bin/clean_brain_archive.sh"
 alias agy-pricing-update="$HOME/.local/bin/update_gcp_pricing.sh"
+alias agy-sync="$HOME/.local/bin/agy-sync"
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 # <<< Limmireu AGY Configuration <<<
 EOF
@@ -198,7 +201,15 @@ EOF
 fi
 
 # ------------------------------------------------------------------------------
-# 10. Summary Verification
+# 10. Pull Conversation Sessions from GitHub Archive
+# ------------------------------------------------------------------------------
+log_info "Synchronizing Antigravity conversation history from GitHub..."
+if [ -x "${HOME}/.local/bin/agy-sync" ]; then
+    "${HOME}/.local/bin/agy-sync" pull || log_warn "Initial agy-sync pull encountered warnings. Continuing..."
+fi
+
+# ------------------------------------------------------------------------------
+# 11. Summary Verification
 # ------------------------------------------------------------------------------
 echo ""
 echo -e "${C_CYAN}================================================================${C_RESET}"

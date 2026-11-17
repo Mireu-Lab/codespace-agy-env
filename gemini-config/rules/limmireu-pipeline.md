@@ -3,6 +3,7 @@
 [Tech_Stack & Code_Std]
 - LIGHT: bash (set -euo pipefail, 로깅/오류처리 엄수)
 - HEAVY/System: Golang 필수 (Python 금지, go.mod 호환, gofmt, 에러핸들링 엄수)
+- Zero-Hardcoding: 소스 코드 및 스크립트 내 하드코딩(비밀값, 경로, IP, 포트, URL, 매직 넘버) 절대 금지. 환경변수/플래그/설정 파일로 동적 주입 필수.
 
 [Infra(IaC) & Cost]
 - IaC: 인프라 프로비저닝 시 Terraform 최우선 활용.
@@ -12,8 +13,8 @@
 
 [Logging & Monitor]
 - 아키텍처: App/DB 연동 환경은 Log4j 형태(레벨링/구조화) 적용. 파이프라인/스크립트 환경은 Jenkins 형태(단계별 status.log + 상세 processing.log)로 이원화.
-- 모니터링/알림: 장애(EOF) 시 로그 컨텍스트(Status+Error Tail)를 AI Studio API(Gemma 4 2B, Serverless)에 주입. 분석된 RCA 및 조치 매뉴얼 이메일 자동 발송 (민감정보 마스킹).
-- 정리: KST 00:00(UTC 15:00) 또는 VM 종료 시 `~/.gemini/antigravity-cli/brain` 내 구형 폴더 .zip 압축 후 삭제.
+- 모니터링/알림: GCP Cloud Monitoring(Alerting Policies, Notification Channels, Log-based Metrics) 연동. 장애 발생 시 지체 없이 에러 테일 로그 기반 즉각 알람 트리거.
+- 정리 및 셧다운: 우선순위 2계층 VM 셧다운. 0순위: 에이전트 작업 완료 시 safe_vm_shutdown.sh 직접 호출 (작업 중 /tmp/antigravity_task.lock으로 보호). 1순위: idle_shutdown_watchdog.sh 30분 유휴 감지 셧다운. 공통: brain 압축 & Google Drive 백업, 듀얼 로깅, 전원 끄기. poweroff_vm.sh 제외.
 
 [ML/DL & MLOps]
 - Model & Dataset: 릴리즈 시 Hugging Face(HF) Model Hub에 모델 업로드. 안정성 검증 완료된 데이터셋은 HF Datasets에 업로드.

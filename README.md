@@ -18,12 +18,13 @@
 | :--- | :--- | :--- |
 | **Antigravity CLI** | Google Antigravity CLI (`agy`) 최신 flat native build | 공식 부트스트랩 자동 연동 |
 | **Pipeline Rules** | 임미르식 글로벌 룰 (`GEMINI.md`, `limmireu-pipeline.md`) | `~/.gemini/config/` 배치 |
+| **Session Sync** | 멀티 환경 대화 세션 양방향 동기화 도구 (`agy-sync`) | GitHub 비공개 리포지토리(`antigravity-sessions-archive`) 연동 |
 | **MCP Servers (11종)** | GCP Calculator, Puppeteer, GitHub, GitLab, Memory, Figma, DuckDuckGo, Gmail, Google Cloud/Workspace, KiCAD | `mcp_config.json` 자동 동적 매핑 |
 | **GCP Calculator** | Golang 기반 고성능 MCP 서버 (`gcp-calculator-mcp`) + 오프라인 가격 DB | `$HOME/.local/bin` 자동 설치 |
 | **Python & MLOps** | Astral `uv`, `uvx`, `huggingface-hub` CLI (`hf`) | 최신 격리 가상환경 도구 |
 | **Heavy Stack** | Golang 1.23+ 툴체인 및 빌드 환경 | Limmireu Global Rule 1 충족 |
 | **Infra & IaC** | Terraform, GitHub CLI (`gh`), GitLab CLI (`glab`) | Limmireu Global Rule 2, 6 충족 |
-| **Shell & Alias** | `agy`, `ll`, `gs`, `gl`, `agy-clean`, `agy-pricing-update` | `~/.bashrc` 자동 등록 |
+| **Shell & Alias** | `agy`, `ll`, `gs`, `gl`, `agy-sync`, `agy-clean`, `agy-pricing-update` | `~/.bashrc` 자동 등록 |
 
 ---
 
@@ -82,6 +83,7 @@ codespace-agy-env/
 │   ├── devcontainer.json       # Go, Terraform, gh feature 및 확장 설정
 │   └── postCreateCommand.sh    # Codespace 컨테이너 기동 후 자동 프로비저닝 스크립트
 ├── bin/                        # 사용자 바이너리 및 유틸리티
+│   ├── agy-sync                # 멀티 환경(VM ↔ Codespaces) 세션 양방향 동기화 CLI
 │   ├── gcp-calculator-mcp      # GCP 계산기 MCP 서버 (Go 네이티브 바이너리)
 │   ├── update_gcp_pricing.sh   # 최신 GCP 가격 정책 업데이트 스크립트
 │   └── clean_brain_archive.sh  # Brain 디렉토리 자동 압축/정리 스크립트
