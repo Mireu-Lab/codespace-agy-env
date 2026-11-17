@@ -233,12 +233,10 @@ EOF
 fi
 
 # ------------------------------------------------------------------------------
-# 10. Pull Conversation Sessions from GitHub Archive
+# 10. Pull Conversation Sessions from GitHub Archive (DISABLED by user request)
 # ------------------------------------------------------------------------------
-log_info "Synchronizing Antigravity conversation history from GitHub..."
-if [ -x "${HOME}/.local/bin/agy-sync" ]; then
-    "${HOME}/.local/bin/agy-sync" pull || log_warn "Initial agy-sync pull encountered warnings. Continuing..."
-fi
+log_info "Conversation history sync (agy-sync) is temporarily disabled by user request."
+# To manually sync sessions later, run: agy-sync pull
 
 # ------------------------------------------------------------------------------
 # 11. Summary Verification
