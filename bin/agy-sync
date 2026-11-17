@@ -18,6 +18,7 @@ readonly AGY_REPO_URL="${AGY_REPO_URL:-git@github.com:Mireu-Lab/antigravity-sess
 readonly GDRIVE_CONV_DIR="${GDRIVE_CONV_DIR:-${HOME_DIR}/gdrive/conversations_txt}"
 readonly LOCAL_CONV_DIR="${LOCAL_CONV_DIR:-${AGY_CLI_DIR}/conversations_txt}"
 readonly EXPORT_SCRIPT="${EXPORT_SCRIPT:-${HOME_DIR}/.local/bin/export_antigravity_sessions.py}"
+readonly AGY_SYNC_FREE_MODE="${AGY_SYNC_FREE_MODE:-$([ -n "${CODESPACES:-}" ] && echo "true" || echo "false")}"
 
 # Dual-Logging paths
 readonly LOG_DIR="${LOG_DIR:-${AGY_CLI_DIR}/logs/sync}"
@@ -73,6 +74,10 @@ ensure_archive_repo() {
         if [ "${clone_success}" = true ]; then
             log_status "Successfully cloned archive repository."
         else
+            if [ "${AGY_SYNC_FREE_MODE}" = "true" ]; then
+                log_status "[Codespaces Free Mode] Archive repository clone skipped or unavailable without blocking. Continuing in free mode."
+                return 0
+            fi
             log_status "ERROR: Failed to clone archive repository."
             return 1
         fi
@@ -234,7 +239,20 @@ EOF
 # ------------------------------------------------------------------------------
 cmd_push() {
     log_status "=== Starting agy-sync PUSH ==="
-    ensure_archive_repo
+    ensure_archive_repo || {
+        if [ "${AGY_SYNC_FREE_MODE}" = "true" ]; then
+            log_status "[Codespaces Free Mode] Repository unavailable. Skipping push cleanly."
+            return 0
+        fi
+        return 1
+    }
+    if [ ! -d "${AGY_ARCHIVE_DIR}/.git" ]; then
+        if [ "${AGY_SYNC_FREE_MODE}" = "true" ]; then
+            log_status "[Codespaces Free Mode] Archive repository not present. Skipping push cleanly."
+            return 0
+        fi
+        return 1
+    fi
     export AGY_ARCHIVE_DIR AGY_CLI_DIR GDRIVE_CONV_DIR LOCAL_CONV_DIR
     stage_local_to_archive
 
@@ -261,14 +279,34 @@ cmd_push() {
         log_detail "Pull rebase notice (clean or already up to date)."
     }
 
-    git -C "${AGY_ARCHIVE_DIR}" push origin main >> "${PROCESSING_LOG}" 2>&1
+    if [ "${AGY_SYNC_FREE_MODE}" = "true" ]; then
+        git -C "${AGY_ARCHIVE_DIR}" push origin main >> "${PROCESSING_LOG}" 2>&1 || {
+            log_status "[Codespaces Free Mode] Push deferred (token lacks write access or offline). Continuing cleanly."
+            return 0
+        }
+    else
+        git -C "${AGY_ARCHIVE_DIR}" push origin main >> "${PROCESSING_LOG}" 2>&1
+    fi
     log_status "Successfully pushed updated sessions to GitHub."
     log_status "=== agy-sync PUSH Completed Successfully ==="
 }
 
 cmd_pull() {
     log_status "=== Starting agy-sync PULL ==="
-    ensure_archive_repo
+    ensure_archive_repo || {
+        if [ "${AGY_SYNC_FREE_MODE}" = "true" ]; then
+            log_status "[Codespaces Free Mode] Repository unavailable. Skipping pull cleanly."
+            return 0
+        fi
+        return 1
+    }
+    if [ ! -d "${AGY_ARCHIVE_DIR}/.git" ]; then
+        if [ "${AGY_SYNC_FREE_MODE}" = "true" ]; then
+            log_status "[Codespaces Free Mode] Archive directory not present. Skipping pull cleanly."
+            return 0
+        fi
+        return 1
+    fi
 
     log_status "Fetching latest sessions from ${AGY_REPO_URL}..."
     git -C "${AGY_ARCHIVE_DIR}" pull --rebase origin main >> "${PROCESSING_LOG}" 2>&1 || {
