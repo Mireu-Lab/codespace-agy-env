@@ -122,7 +122,7 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 6. Verify Node / npx (Required for MCP Servers)
+# 6. Verify Node / npx & VCS CLIs (glab, gh)
 # ------------------------------------------------------------------------------
 log_info "Verifying Node.js and npx runtime..."
 if command -v npx >/dev/null 2>&1; then
@@ -131,15 +131,32 @@ else
     log_warn "npx not found. Some MCP servers (puppeteer, github, gitlab, gmail) require Node.js."
 fi
 
+log_info "Verifying GitLab CLI (glab)..."
+if ! command -v glab >/dev/null 2>&1; then
+    log_info "glab not detected. Attempting installation via apt..."
+    if command -v apt-get >/dev/null 2>&1 && [ "$(id -u)" -eq 0 ]; then
+        apt-get update -qq && apt-get install -y -qq glab || true
+    elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq glab || true
+    fi
+fi
+if command -v glab >/dev/null 2>&1; then
+    log_success "GitLab CLI (glab) is ready: $(glab --version 2>&1 | head -n 1)"
+fi
+
 # ------------------------------------------------------------------------------
-# 7. Install GCP Calculator MCP Server & Utilities
+# 7. Install Multi-Cloud Pricing Calculator & Maintenance Utilities
 # ------------------------------------------------------------------------------
-log_info "Deploying GCP Calculator MCP server & maintenance utilities..."
+log_info "Deploying Multi-Cloud Pricing Calculator, agy-sync & maintenance utilities..."
+get_file "bin/cloud-pricing-mcp" "${HOME}/.local/bin/cloud-pricing-mcp"
+get_file "bin/cloud-calc" "${HOME}/.local/bin/cloud-calc"
 get_file "bin/gcp-calculator-mcp" "${HOME}/.local/bin/gcp-calculator-mcp"
 get_file "bin/clean_brain_archive.sh" "${HOME}/.local/bin/clean_brain_archive.sh"
 get_file "bin/update_gcp_pricing.sh" "${HOME}/.local/bin/update_gcp_pricing.sh"
 get_file "bin/agy-sync" "${HOME}/.local/bin/agy-sync"
 
+chmod +x "${HOME}/.local/bin/cloud-pricing-mcp"
+chmod +x "${HOME}/.local/bin/cloud-calc"
 chmod +x "${HOME}/.local/bin/gcp-calculator-mcp"
 chmod +x "${HOME}/.local/bin/clean_brain_archive.sh"
 chmod +x "${HOME}/.local/bin/update_gcp_pricing.sh"
@@ -194,6 +211,7 @@ alias gl="git log --oneline --graph --decorate -n 15"
 alias agy-clean="$HOME/.local/bin/clean_brain_archive.sh"
 alias agy-pricing-update="$HOME/.local/bin/update_gcp_pricing.sh"
 alias agy-sync="$HOME/.local/bin/agy-sync"
+alias cloud-calc="$HOME/.local/bin/cloud-calc"
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 # <<< Limmireu AGY Configuration <<<
 EOF

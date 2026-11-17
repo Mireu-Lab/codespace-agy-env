@@ -1,5 +1,11 @@
 {
   "mcpServers": {
+    "cloud-pricing": {
+      "command": "__HOME__/.local/bin/cloud-pricing-mcp",
+      "args": [
+        "server"
+      ]
+    },
     "gcp-calculator": {
       "command": "__HOME__/.local/bin/gcp-calculator-mcp",
       "args": [
@@ -16,7 +22,9 @@
     "google-workspace": {
       "command": "uvx",
       "args": [
-        "google-workspace-mcp"
+        "--from",
+        "google-workspace-mcp",
+        "google-workspace-worker"
       ]
     },
     "google-cloud": {
