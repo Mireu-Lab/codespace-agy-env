@@ -133,15 +133,29 @@ fi
 
 log_info "Verifying GitLab CLI (glab)..."
 if ! command -v glab >/dev/null 2>&1; then
-    log_info "glab not detected. Attempting installation via apt..."
-    if command -v apt-get >/dev/null 2>&1 && [ "$(id -u)" -eq 0 ]; then
-        apt-get update -qq && apt-get install -y -qq glab || true
-    elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
-        sudo apt-get update -qq && sudo apt-get install -y -qq glab || true
-    fi
+    log_info "glab not detected. Installing standalone binary..."
+    GLAB_VER="1.46.1"
+    curl -fsSL "https://gitlab.com/gitlab-org/cli/-/releases/v${GLAB_VER}/downloads/glab_${GLAB_VER}_Linux_x86_64.tar.gz" -o /tmp/glab.tar.gz 2>/dev/null && \
+    tar -xzf /tmp/glab.tar.gz -C /tmp bin/glab 2>/dev/null && \
+    mv /tmp/bin/glab "${HOME}/.local/bin/glab" 2>/dev/null && \
+    chmod +x "${HOME}/.local/bin/glab" 2>/dev/null && \
+    rm -rf /tmp/glab.tar.gz /tmp/bin || true
 fi
 if command -v glab >/dev/null 2>&1; then
     log_success "GitLab CLI (glab) is ready: $(glab --version 2>&1 | head -n 1)"
+fi
+
+log_info "Verifying Terraform CLI..."
+if ! command -v terraform >/dev/null 2>&1; then
+    log_info "Installing standalone Terraform binary..."
+    TF_VER="1.9.8"
+    curl -fsSL "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip" -o /tmp/tf.zip 2>/dev/null && \
+    unzip -q -o /tmp/tf.zip -d "${HOME}/.local/bin" 2>/dev/null && \
+    chmod +x "${HOME}/.local/bin/terraform" 2>/dev/null && \
+    rm -f /tmp/tf.zip || true
+fi
+if command -v terraform >/dev/null 2>&1; then
+    log_success "Terraform is ready: $(terraform -version | head -n 1)"
 fi
 
 # ------------------------------------------------------------------------------

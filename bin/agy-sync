@@ -45,18 +45,36 @@ log_detail() {
 # ------------------------------------------------------------------------------
 ensure_archive_repo() {
     if [ ! -d "${AGY_ARCHIVE_DIR}/.git" ]; then
-        log_status "Archive repository not found at ${AGY_ARCHIVE_DIR}. Cloning from ${AGY_REPO_URL}..."
+        local clone_success=false
         mkdir -p "${AGY_ARCHIVE_DIR}"
-        if git clone "${AGY_REPO_URL}" "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+
+        # Fast path for GitHub Codespaces: use gh CLI or HTTPS immediately (0s SSH wait)
+        if [ -n "${CODESPACES:-}" ]; then
+            log_status "Codespaces environment detected. Fast-cloning archive via gh/HTTPS..."
+            if command -v gh >/dev/null 2>&1 && gh repo clone Mireu-Lab/antigravity-sessions-archive "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+                clone_success=true
+            elif git clone "https://github.com/Mireu-Lab/antigravity-sessions-archive.git" "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+                clone_success=true
+            fi
+        fi
+
+        # Standard path (VM / Local workstation)
+        if [ "${clone_success}" != true ]; then
+            log_status "Cloning session archive repository from ${AGY_REPO_URL}..."
+            if GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=5" git clone "${AGY_REPO_URL}" "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+                clone_success=true
+            elif command -v gh >/dev/null 2>&1 && gh repo clone Mireu-Lab/antigravity-sessions-archive "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+                clone_success=true
+            elif git clone "https://github.com/Mireu-Lab/antigravity-sessions-archive.git" "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
+                clone_success=true
+            fi
+        fi
+
+        if [ "${clone_success}" = true ]; then
             log_status "Successfully cloned archive repository."
         else
-            log_detail "SSH clone failed. Attempting HTTPS clone via gh CLI..."
-            if command -v gh >/dev/null 2>&1 && gh repo clone Mireu-Lab/antigravity-sessions-archive "${AGY_ARCHIVE_DIR}" >> "${PROCESSING_LOG}" 2>&1; then
-                log_status "Successfully cloned via gh CLI."
-            else
-                log_status "ERROR: Failed to clone archive repository."
-                return 1
-            fi
+            log_status "ERROR: Failed to clone archive repository."
+            return 1
         fi
     fi
 
