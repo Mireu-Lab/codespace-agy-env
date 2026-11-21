@@ -1,0 +1,51 @@
+{
+  "name": "Limmireu AGY Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
+  },
+  "features": {},
+  "remoteUser": "codespace",
+  "remoteEnv": {
+    "PATH": "/home/codespace/.local/bin:/home/codespace/.local/go/bin:/home/codespace/go/bin:/usr/local/go/bin:${containerEnv:PATH}",
+    "GOPATH": "/home/codespace/go",
+    "GIT_DISCOVERY_ACROSS_FILESYSTEM": "1",
+    "AGY_SYNC_FREE_MODE": "true"
+  },
+  "secrets": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": {
+      "description": "GitHub Personal Access Token for GitHub MCP server (@modelcontextprotocol/server-github)"
+    },
+    "GITLAB_PERSONAL_ACCESS_TOKEN": {
+      "description": "GitLab Personal Access Token for GitLab MCP server and glab CLI"
+    },
+    "FIGMA_API_KEY": {
+      "description": "Figma API Key for Figma Developer MCP server (figma-developer-mcp)"
+    },
+    "HF_TOKEN": {
+      "description": "Hugging Face Access Token for huggingface-hub (hf) CLI"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "hashicorp.terraform",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "timonwong.shellcheck",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "go.useLanguageServer": true,
+        "go.formatTool": "gofmt",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh"
+}
