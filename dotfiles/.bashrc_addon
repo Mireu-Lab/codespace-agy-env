@@ -14,9 +14,11 @@ alias gl="git log --oneline --graph --decorate -n 15"
 alias gco="git checkout"
 alias gcb="git checkout -b"
 
-# 3. Brain Directory Cleanup at Session End (Optional Utility)
+# 3. FinOps & Maintenance Utilities (GCP Calculator MCP / CLI)
+alias gcp-calc="$HOME/.local/bin/gcp-calculator-mcp"
 alias agy-clean="$HOME/.local/bin/clean_brain_archive.sh"
 alias agy-pricing-update="$HOME/.local/bin/update_gcp_pricing.sh"
+alias agy-sync="$HOME/.local/bin/agy-sync"
 
 # 4. GitFlow & Limmireu Defaults
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=1

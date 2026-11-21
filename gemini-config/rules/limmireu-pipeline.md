@@ -1,45 +1,45 @@
 # Limmireu Pipeline Global Rules
 
 [Tech_Stack & Code_Std]
-- LIGHT: bash (set -euo pipefail, 로깅/오류처리 엄수)
-- HEAVY/System: Golang 필수 (Python 금지, go.mod 호환, gofmt, 에러핸들링 엄수)
-- Zero-Hardcoding: 소스 코드 및 스크립트 내 하드코딩(비밀값, 경로, IP, 포트, URL, 매직 넘버) 절대 금지. 환경변수/플래그/설정 파일로 동적 주입 필수.
+- LIGHT: Shell Script (`bash`) strictly adhering to `set -euo pipefail`, explicit logging, and robust error handling.
+- HEAVY/System: Golang (Go) is mandatory. Prohibit other languages like Python unless explicitly requested. Enforce go.mod compatibility, gofmt, and strict error handling.
+- Zero-Hardcoding: Hardcoding values (secrets, tokens, paths, URLs, IPs, ports, magic numbers/strings) is strictly prohibited across all code and scripts. Always externalize parameters via environment variables, CLI flags, or config files.
 
 [Infra(IaC) & Cost]
-- IaC: 인프라 프로비저닝 시 Terraform 최우선 활용.
-- TF State: 로컬 State 금지. 활용 서비스 환경에 맞는 Remote Backend 및 State Locking 구성.
-- Security: Secret 하드코딩 금지. Security Agent 매뉴얼 기반 보안 구성 및 수정.
-- 비용(Cost) 최우선. GCP Pricing Calculator 검증. Cloud Run/Compute Engine 권장 및 완료 자원 자동 정리.
+- IaC: Terraform must be prioritized for infrastructure provisioning.
+- TF State: Prohibit local state. Configure Remote Backend and State Locking appropriate for deployment environments.
+- Security: Secret hardcoding is strictly prohibited. Configure security according to Security Agent manuals.
+- Cost First & GCP Pricing: Prioritize the globally installed `gcp-calculator-mcp` (GCP Pricing Calculator MCP Server & CLI Tool, https://github.com/Mireu-workflow/gcp-calculator-cli) for Google Cloud infrastructure design, price estimation, and FinOps cost calculations. Enforce CLI-First and MCP-integrated design. Prioritize Cloud Run / Compute Engine with automated resource cleanup.
 
 [Logging & Monitor]
-- 아키텍처: App/DB 연동 환경은 Log4j 형태(레벨링/구조화) 적용. 파이프라인/스크립트 환경은 Jenkins 형태(단계별 status.log + 상세 processing.log)로 이원화.
-- 모니터링/알림: GCP Cloud Monitoring(Alerting Policies, Notification Channels, Log-based Metrics) 연동. 장애 발생 시 지체 없이 에러 테일 로그 기반 즉각 알람 트리거.
-- 정리 및 셧다운: 우선순위 2계층 VM 셧다운. 0순위: 에이전트 작업 완료 시 safe_vm_shutdown.sh 직접 호출 (작업 중 /tmp/antigravity_task.lock으로 보호). 1순위: idle_shutdown_watchdog.sh 30분 유휴 감지 셧다운. 공통: brain 압축 & Google Drive 백업, 듀얼 로깅, 전원 끄기. poweroff_vm.sh 제외.
+- Architecture: Apply Log4j-style hierarchical/structured logging in App/DB environments. Apply Jenkins-style dual logging (step-by-step status.log + detailed processing.log) in pipeline/script environments.
+- Monitoring/Notification: Integrate with GCP Cloud Monitoring (Alerting Policies, Notification Channels, Log-based Metrics). Trigger immediate alerts with error tail logs upon failure without waiting for the 1-hour interval.
+- Cleanup & Shutdown: Priority-based 2-tier VM shutdown. Priority 0: Agent autonomously triggers safe shutdown routine upon task completion (shielded via `/tmp/antigravity_task.lock`). Priority 1: idle watchdog triggers shutdown after 30 mins of complete idle (no SSH, no builds, no locks). Both routines compress `brain/`, sync to backup archive, dual-log, and execute cleanup.
 
 [ML/DL & MLOps]
-- Model & Dataset: 릴리즈 시 Hugging Face(HF) Model Hub에 모델 업로드. 안정성 검증 완료된 데이터셋은 HF Datasets에 업로드.
-- Backup (MLflow): 최종 완성 시 HF 제반 기능을 활용하여 MLflow 트래킹 내역 및 아티팩트의 완벽한 백업본으로 구성.
+- Model & Dataset: Upload validated models to Hugging Face (HF) Model Hub upon release. Upload verified datasets to HF Datasets.
+- Backup (MLflow): Utilize Hugging Face capabilities upon completion as a comprehensive backup mirror of MLflow tracking history and artifacts.
 
 [Figma_MCP & UI_Fidelity]
-- Target: 캔버스 전체 파싱 절대 금지. `Copy link to selection`으로 특정 노드 ID 타겟팅 필수[cite: 1].
-- Node ID: `-`를 `:`로 변환, `/design/` 대신 `/file/` 경로 호환성 확보[cite: 1].
-- Hierarchy: 문서 -> 선택 ID 내부(오토레이아웃 속성 중심)로 계층적 탐색[cite: 1].
-- Payload: `layoutMode`, `itemSpacing`, `padding*`, `style`, `fills` 유지. 베지에 곡선 등 메타데이터 제외[cite: 1].
-- Fidelity: UI/UX 리디자인 및 임의 속성 추론 절대 금지 (Zero Creative Liberty)[cite: 1].
-- AutoLayout: `HUG`(`w-fit`), `FILL`(`flex-1`/`w-full`), `FIXED`(`w-[Npx]`) 엄격 적용[cite: 1].
-- Tailwind: 어림잡기 금지, `gap-[Npx]`, `p-[Npx]` 등 대괄호 기반 정확한 수치 매핑 필수[cite: 1].
-- Workflow: 1단계 토큰 추출(Token Extraction), 2단계 레이아웃 구조 조립(Structural Assembly) 분리 진행[cite: 1].
-- Cross-Check: VLM(Visual-Language Model) 활용하여 렌더링 이미지와 코드의 100% 일치 교차 검증[cite: 1].
+- Target: Full canvas parsing is strictly prohibited. Always target specific node IDs via `Copy link to selection`.
+- Node ID: Replace `-` with `:`, and ensure `/file/` path compatibility instead of `/design/`.
+- Hierarchy: Hierarchical traversal from root into the selected node ID (focusing on autolayout properties).
+- Payload: Maintain `layoutMode`, `itemSpacing`, `padding*`, `style`, and `fills`. Exclude bezier curves and redundant metadata.
+- Fidelity: Zero Creative Liberty; no redesigns or arbitrary guesses.
+- AutoLayout: Strictly enforce `HUG` (`w-fit`), `FILL` (`flex-1`/`w-full`), and `FIXED` (`w-[Npx]`).
+- Tailwind: No approximations; enforce exact bracket notations (`gap-[Npx]`, `p-[Npx]`).
+- Workflow: Stage 1 Token Extraction followed by Stage 2 Structural Assembly.
+- Cross-Check: Use Visual-Language Models (VLM) to verify 100% visual fidelity between the rendered image and code.
 
 [Git_Workflow & GitOps]
-- Branch: GitFlow 방법론 엄격 준수 (main, develop, feature, release, hotfix).
-- Release: 릴리즈 진행 시 GitOps 파이프라인 최대한 활용.
-- 기록원칙: 논의/결정/RCA 원격 Issue/Wiki 기록 필수 (로컬 방치 금지). 선검증 100% 완료 후 Push.
-- Issue: 템플릿 [1.개요 2.의사결정 3.문제점 4.구현상세 5.검증결과] 적용. CLI로 관리.
-- Wiki (구조/SOP): 아키텍처/파이프라인 명세 반영.
-- Commit: Conventional Commits `type(scope): summary (#issue)`. 하단 `Closes #issue` 필수.
+- Branch: Strictly adhere to GitFlow methodology (`main`, `develop`, `feature`, `release`, `hotfix`).
+- Release: Maximize use of GitOps pipelines during releases.
+- Knowledge Sharing: Document decisions, discussions, and RCA in remote repository Issues/Wiki (never keep only in local chat). Verify 100% before push.
+- Issue: Standard template `[1. Overview & Purpose, 2. Discussions & Decisions, 3. Analyzed Issues, 4. Implementation Details, 5. Verification Results]`. Manage via CLI.
+- Wiki (Architecture/SOP): Document system architecture, data flows, and permanent guidelines in Wiki pages.
+- Commit: Conventional Commits `<type>(<scope>): <summary> (#issue)`. Append `Closes #issue` in footer.
 
 [PM_Governance]
-- 아이디어/회의록: 원격 Issue 등록 및 Wiki/docs 크로스링크 필수.
-- PM/구현 책임자: limmireu1214@gmail.com 단독 지정 (GitLab:@mireu-lab, GitHub:@Mireu-Lab).
-- 할당: Issue 헤더에 담당자 명시 및 CLI(`--assignee`) 할당 필수.
+- Ideas / Meeting Minutes: Mandatory issue tracking on remote repositories with documentation cross-links.
+- PM / Implementation Owner: Solely assigned to `limmireu1214@gmail.com` (GitLab: `@mireu-lab`, GitHub: `@Mireu-Lab`).
+- Assignment: Explicitly declare PM/Owner metadata in the issue header and assign via CLI (`--assignee`).

@@ -8,7 +8,8 @@
 > **프로젝트 매니저 (Project Manager)**: `limmireu1214@gmail.com`  
 > **구현 책임자 (Implementation Owner)**: `limmireu1214@gmail.com`  
 
-본 저장소는 **Google Antigravity CLI (`agy`)** 및 **Limmireu Pipeline Global Rules** 기반의 완전한 AI 개발 환경을 **GitHub Codespaces** 환경에 그대로 복제/배포하기 위한 올인원 인스톨러 및 Dotfiles 리포지토리입니다.
+본 저장소는 **Google Antigravity CLI (`agy`)** 및 **Limmireu Pipeline Global Rules** 기반의 완전한 AI 개발 환경을 **GitHub Codespaces** 환경에 자동 배포하기 위한 올인원 Dotfiles 리포지토리입니다.
+비용 예측 및 FinOps 엔지니어링 도구로 **[gcp-calculator-cli](https://github.com/Mireu-workflow/gcp-calculator-cli)** 공식 설치 가이드를 준수하여 빌드 및 연동을 수행합니다.
 
 ---
 
@@ -17,18 +18,20 @@
 | 컴포넌트 | 세부 내용 및 버전 | 비고 |
 | :--- | :--- | :--- |
 | **Antigravity CLI** | Google Antigravity CLI (`agy`) 최신 flat native build | 공식 부트스트랩 자동 연동 |
-| **Pipeline Rules** | 임미르식 글로벌 룰 (`GEMINI.md`, `limmireu-pipeline.md`) | `~/.gemini/config/` 배치 |
-| **Session Sync** | 멀티 환경 대화 세션 양방향 동기화 도구 (`agy-sync`) | GitHub 비공개 리포지토리(`antigravity-sessions-archive`) 연동 |
-| **MCP Servers (11종)** | GCP Calculator, Puppeteer, GitHub, GitLab, Memory, Figma, DuckDuckGo, Gmail, Google Cloud/Workspace, KiCAD | `mcp_config.json` 자동 동적 매핑 |
-| **GCP Calculator** | Golang 기반 고성능 MCP 서버 (`gcp-calculator-mcp`) + 오프라인 가격 DB | `$HOME/.local/bin` 자동 설치 |
-| **Python & MLOps** | Astral `uv`, `uvx`, `huggingface-hub` CLI (`hf`) | 최신 격리 가상환경 도구 |
+| **Pipeline Rules** | 임미르식 글로벌 룰 (`GEMINI.md`, `limmireu-pipeline.md`) | `~/.gemini/config/` 배치 (Zero-Hardcoding) |
+| **AGY User Config** | 사용자 테마 및 글로벌 권한 (`config.json`) | Dark Seed Theme, Clean Script Auto-Grant |
+| **Plugins** | Chrome DevTools Plugin (`chrome-devtools-plugin`) | 6종 개발 스킬 포함 (A11y, LCP, Memory Leak 등) |
+| **Skills** | MCP & Skills 통합 가이드 (`mcp-and-skills-guide`) | 점진적 공개(Progressive Disclosure) |
+| **GCP Calculator** | Golang 기반 고성능 MCP 서버 & CLI ([`gcp-calculator-cli`](https://github.com/Mireu-workflow/gcp-calculator-cli)) | 공식 소스 빌드 & 독립 실행 바이너리 배포 |
+| **MCP Servers (7종)** | `gcp-calculator`, `puppeteer`, `google-workspace`, `memory`, `figma`, `duckduckgo`, `gmail` | `mcp_config.json` 자동 동적 매핑 |
+| **Python & MLOps** | Astral `uv`, `uvx`, `huggingface-hub` CLI (`hf`) | 최신 격리 가상환경 및 툴체인 |
 | **Heavy Stack** | Golang 1.23+ 툴체인 및 빌드 환경 | Limmireu Global Rule 1 충족 |
-| **Infra & IaC** | Terraform, GitHub CLI (`gh`), GitLab CLI (`glab`) | Limmireu Global Rule 2, 6 충족 |
-| **Shell & Alias** | `agy`, `ll`, `gs`, `gl`, `agy-sync`, `agy-clean`, `agy-pricing-update` | `~/.bashrc` 자동 등록 |
+| **Infra & IaC** | Terraform, GitLab CLI (`glab`) | Limmireu Global Rule 2, 6 충족 |
+| **Shell & Alias** | `agy`, `ll`, `gs`, `gl`, `gco`, `gcb`, `gcp-calc`, `agy-pricing-update`, `agy-clean`, `agy-sync` | `~/.bashrc` 자동 등록 |
 
 ---
 
-## 🚀 적용 방법 (3가지 지원)
+## 🚀 Quick Start & 적용 방법
 
 ### 방법 1. GitHub Codespaces 개인 Dotfiles로 등록 (가장 추천 ⭐)
 
@@ -39,7 +42,7 @@ GitHub 계정에 등록해 두면, **어떤 리포지토리에서 Codespaces를 
 3. **Dotfiles** 항목으로 스크롤:
    - ☑️ **Automatically install dotfiles** 체크
    - **Repository**: `Mireu-Lab/codespace-agy-env` 선택
-4. 이후 새로 생성하는 모든 GitHub Codespaces에서 `agy`와 전체 파이프라인 개발 환경이 즉시 로드됩니다.
+4. 이후 새로 생성하는 모든 GitHub Codespaces에서 `agy`와 전체 개발 환경이 즉시 로드됩니다.
 
 ---
 
@@ -51,7 +54,7 @@ GitHub 계정에 등록해 두면, **어떤 리포지토리에서 Codespaces를 
 curl -fsSL https://raw.githubusercontent.com/Mireu-Lab/codespace-agy-env/main/install.sh | bash
 ```
 
-설치 완료 후 새 터미널을 열거나 다음을 실행하여 즉시 사용할 수 있습니다:
+설치 완료 후 터미널에 환경을 반영하고 사용합니다:
 ```bash
 source ~/.bashrc
 agy
@@ -59,9 +62,9 @@ agy
 
 ---
 
-### 방법 3. 신규/기존 프로젝트에 DevContainer로 포함
+### 방법 3. 신규/기존 다른 프로젝트에 DevContainer로 포함
 
-특정 프로젝트를 열 때 팀원 모두가 동일한 AGY 환경을 사용하도록 하려면, 프로젝트 루트에 본 저장소의 `.devcontainer/` 폴더를 복사합니다:
+다른 리포지토리에서도 동일한 개발 환경을 구성하려면 프로젝트 루트에 본 저장소의 `.devcontainer/` 설정을 추가합니다:
 
 ```bash
 # 대상 프로젝트 루트에서 실행
@@ -71,48 +74,117 @@ curl -fsSL https://raw.githubusercontent.com/Mireu-Lab/codespace-agy-env/main/.d
 chmod +x .devcontainer/postCreateCommand.sh
 ```
 
+이후 GitHub Codespaces를 열거나 VS Code의 **Dev Containers: Reopen in Container**를 실행하면 전체 환경이 100% 자동 프로비저닝됩니다.
+
+---
+
+## 🛠️ GCP Calculator MCP & CLI 설치 및 연동 가이드
+
+본 환경은 **[gcp-calculator-cli](https://github.com/Mireu-workflow/gcp-calculator-cli)** 의 공식 인스톨 가이드에 따라 구성됩니다.
+
+### 1. Installation & Build
+
+소스 리포지토리에서 직접 빌드하거나 사전 컴파일된 바이너리를 활용합니다 (`install.sh`에서 자동 처리):
+
+```bash
+git clone https://github.com/Mireu-workflow/gcp-calculator-cli.git
+cd gcp-calculator-cli
+go build -o ~/.local/bin/gcp-calculator-mcp main.go
+chmod +x ~/.local/bin/gcp-calculator-mcp
+```
+
+### 2. MCP Server Configuration (`mcp_config.json`)
+
+`~/.gemini/config/mcp_config.json`에 `gcp-calculator` 서버가 기본 등록됩니다:
+
+```json
+{
+  "mcpServers": {
+    "gcp-calculator": {
+      "command": "/home/codespace/.local/bin/gcp-calculator-mcp",
+      "args": [
+        "server"
+      ]
+    }
+  }
+}
+```
+
+### 3. CLI Usage & Examples
+
+터미널에서 `gcp-calc` (또는 `gcp-calculator-mcp`)를 통해 직접 GCP 비용을 산출할 수 있습니다:
+
+```bash
+# 1. Compute Engine VM (Seoul region + 3-Year CUD 할인 적용)
+gcp-calc compute -machine e2-standard-4 -region asia-northeast3 -commitment 3-year
+
+# 2. Cloud Storage (Seoul region + Standard 500GB)
+gcp-calc storage -class standard -gb 500
+
+# 3. Dynamic Universal GCP Service Evaluation (115+ 제품 지원)
+gcp-calc service "Sole-tenant Nodes" '{"nodes": 2, "hours_per_month": 730, "region": "asia-northeast3", "commitment": "3-year"}'
+
+# 4. BigQuery Data Warehouse 견적 산출
+gcp-calc bigquery -query-tb 10 -storage-gb 500
+
+# 5. MCP Stdio Server 기동
+gcp-calc server
+```
+
+### 4. MCP Tools Specification (에이전트 호출 지원 8종 도구)
+
+| Tool Name | Description |
+| :--- | :--- |
+| `calculate_compute_engine` | Calculate monthly cost for GCP Compute Engine VMs, GPUs, Cloud TPUs, CUD, Spot, and Disks. |
+| `calculate_cloud_run` | Calculate monthly cost for GCP Cloud Run serverless applications including free tier allowances. |
+| `calculate_storage` | Calculate monthly cost for GCP Cloud Storage tiers and network egress. |
+| `calculate_gke` | Calculate monthly cost for Google Kubernetes Engine (Autopilot and Standard node pools). |
+| `calculate_cloud_sql` | Calculate monthly cost for Cloud SQL instances (MySQL, PostgreSQL, SQL Server, High Availability). |
+| `calculate_bigquery` | Calculate monthly cost for BigQuery active storage and on-demand query data scanned. |
+| `calculate_gcp_service` | Universal evaluator dynamically querying the complete 115+ GCP service catalog. |
+| `estimate_infrastructure` | Full infrastructure cost estimation and FinOps optimization recommendations. |
+
 ---
 
 ## 📂 저장소 디렉토리 구조
 
 ```text
 codespace-agy-env/
-├── install.sh                  # Codespace Dotfiles 공식 규격 설치 스크립트 (원격/로컬 겸용)
+├── .devcontainer/              # 다른 저장소 범용 배포용 DevContainer 표준 템플릿
+│   ├── devcontainer.json       # Go, Terraform, gh feature 및 VS Code 확장 설정
+│   ├── postCreateCommand.sh    # Codespace 기동 후 install.sh 자동 실행 스크립트
+│   └── README.md               # DevContainer 적용 가이드
+├── install.sh                  # Codespace Dotfiles 규격 원클릭 설치 스크립트
 ├── README.md                   # 본 가이드 문서
-├── .devcontainer/              # DevContainer 표준 템플릿
-│   ├── devcontainer.json       # Go, Terraform, gh feature 및 확장 설정
-│   └── postCreateCommand.sh    # Codespace 컨테이너 기동 후 자동 프로비저닝 스크립트
+├── todo.md                     # 프로젝트 요구사항 및 체크리스트
 ├── bin/                        # 사용자 바이너리 및 유틸리티
-│   ├── agy-sync                # 멀티 환경(VM ↔ Codespaces) 세션 양방향 동기화 CLI
-│   ├── gcp-calculator-mcp      # GCP 계산기 MCP 서버 (Go 네이티브 바이너리)
+│   ├── gcp-calculator-mcp      # GCP 계산기 MCP 서버 & CLI (Go 단일 네이티브 바이너리)
 │   ├── update_gcp_pricing.sh   # 최신 GCP 가격 정책 업데이트 스크립트
-│   └── clean_brain_archive.sh  # Brain 디렉토리 자동 압축/정리 스크립트
-├── gemini-config/              # AGY & Gemini 에이전트 설정
-│   ├── settings.json.template  # dangerouslySkipPermissions, trustedWorkspaces(/workspaces)
-│   ├── mcp_config.json.template# $HOME 경로 동적 매핑 11종 MCP 설정
-│   ├── GEMINI.md               # 전역 시스템 프롬프트 및 Limmireu Pipeline 규칙
-│   ├── gcp_pricing.json        # GCP 리소스 단가 데이터베이스
+│   ├── clean_brain_archive.sh  # Brain 디렉토리 자동 압축/정리 스크립트
+│   └── agy-sync                # 세션 동기화 CLI
+├── gemini-config/              # AGY & Gemini 에이전트 설정 배포 템플릿
+│   ├── settings.json.template  # dangerouslySkipPermissions, trustedWorkspaces 동적 매핑
+│   ├── config.json.template    # AGY 테마, 사용자 설정 및 권한 부여 템플릿
+│   ├── mcp_config.json.template# gcp-calculator 포함 7종 MCP 설정 템플릿
+│   ├── GEMINI.md               # 전역 시스템 프롬프트 및 Limmireu Pipeline 규칙 (영문)
+│   ├── gcp_pricing.json        # GCP 리소스 단가 데이터베이스 (pricing.json)
+│   ├── catalog.json            # 115+ GCP 전 제품 카탈로그 데이터베이스
+│   ├── .migrated               # AGY 마이그레이션 플래그
 │   ├── rules/
 │   │   └── limmireu-pipeline.md# 임미르식 글로벌 엔지니어링 룰
-│   └── skills/
-│       └── mcp-and-skills-guide/
-│           └── SKILL.md        # MCP & Skills 가이드
+│   ├── skills/
+│   │   └── mcp-and-skills-guide/
+│   │       └── SKILL.md        # MCP & Skills 안내 가이드
+│   └── plugins/
+│       └── chrome-devtools-plugin/ # Chrome DevTools 플러그인 (6개 스킬 포함)
 └── dotfiles/                   # Dotfiles 보조 설정
     ├── .bashrc_addon           # PATH 및 편의 alias 세팅
-    └── .gitconfig              # Git 기본 인증 및 계정 설정
+    └── .gitconfig              # Git 기본 설정
 ```
-
----
-
-## 🧪 로컬 검증 및 기능 테스트
-
-- **스크립트 구문 검사**: `bash -n install.sh` 통과 완료.
-- **환경 변수 및 경로 매핑**: 하드코딩된 특정 사용자 홈(`/home/limmireu1214`)을 모두 배제하고 `$HOME` 및 `/workspaces` 동적 매핑 완료.
-- **MCP 서버 연동**: Node (`npx`), Python (`uvx`), Go (`$HOME/.local/bin/gcp-calculator-mcp`) 간 원활한 상호작용 검증.
 
 ---
 
 ## 📜 라이선스 및 거버넌스
 
 - **PM / 유지보수 담당자**: `limmireu1214@gmail.com` (`@Mireu-Lab`)
-- 본 프로젝트는 [Limmireu Pipeline Global Rules](file:///home/limmireu1214/_projects/_gemini_rule/agy-pipeline.md)를 엄격히 준수합니다.
+- 본 프로젝트는 [Limmireu Pipeline Global Rules](gemini-config/rules/limmireu-pipeline.md)를 엄격히 준수합니다.

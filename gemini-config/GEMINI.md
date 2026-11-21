@@ -1,76 +1,79 @@
-# Limmireu Pipeline Global Rules (임미르식 프로그램 구현 파이프라인 글로벌 룰)
+# Limmireu Pipeline Global Rules
 
-## 1. 언어 및 기술 스택 선정 (Language & Tech Stack)
-- **LIGHT 구현**: Shell Script (`bash`) 활용 (`set -euo pipefail`, 명확한 로깅 및 오류 처리 작성).
-- **HEAVY 구현 / 시스템 구축 / 실험 구현**: **Golang (Go)** 필수 활용.
-  - Python 등 기타 언어 활용 금지 (단, 명시적 사용자 요청 시 예외 적용).
-  - Go 프로젝트 작성 시 Target Go Version에 맞춰 호환되는 라이브러리와 모듈(`go.mod`)을 구성하고 `gofmt` 및 엄격한 에러 핸들링 준수.
-- **프로젝트 구현 전반 하드코딩 절대 금지 (Strict Zero-Hardcoding Principle)**:
-  - 소스 코드 및 스크립트 전 계층에서 API Key, 토큰, 비밀번호, IP/포트, 엔드포인트 URL, 로컬 절대 경로, 매직 넘버/스트링 하드코딩 전면 금지.
-  - 모든 환경 설정값과 비밀값은 환경변수(`os.Getenv`), CLI 플래그, 또는 외부 설정 파일(`.env`, `config.yaml`, `config.json`)을 통해 런타임에 동적으로 주입할 것.
+## 1. Language & Tech Stack
+- **LIGHT Implementation**: Use Shell Script (`bash`) strictly adhering to `set -euo pipefail`, explicit logging, and robust error handling.
+- **HEAVY Implementation / System Engineering / Experiments**: **Golang (Go)** is strictly mandatory.
+  - Using other languages like Python is prohibited (unless explicitly requested by the user).
+  - Go projects must declare a compatible Go version in `go.mod`, use compatible libraries, format code with `gofmt`, and enforce strict error handling.
+- **Strict Zero-Hardcoding Principle (하드코딩 전면 금지)**:
+  - **Zero Hardcoding Across All Implementations**: Hardcoding any values—including secrets, API keys, credentials, IP addresses, ports, URLs/endpoints, local absolute file paths, and magic numbers/strings—is strictly prohibited.
+  - **Dynamic & Externalized Configuration**: All variables, environmental settings, and credentials must be injected dynamically via environment variables, CLI flags, or external configuration files (`config.yaml`, `.env`) with proper validation and robust defaults. Shell scripts must parameterize arguments or env vars at the top, and Go code must use structured config models.
 
-## 2. 인프라(IaC) 및 비용 최우선 원칙 (Infra IaC, Security & Cost First)
-- **IaC (Infrastructure as Code)**: 인프라 프로비저닝 시 **Terraform** 최우선 활용.
-- **TF State**: 로컬 State 관리 금지. 프로젝트/서비스 환경에 맞는 **Remote Backend 및 State Locking** 구성.
-- **보안 및 시크릿 관리 (Security & Secrets)**: Secret 하드코딩 절대 금지. 모든 비밀값은 Secret Manager 또는 환경변수로 관리하며 소스 및 상태 파일 커밋을 엄금함. Security Agent 매뉴얼 기반 보안 구성 및 수정.
-- **시스템/인프라 구성**: 컴퓨팅 및 인프라 설계 시 **GCP 계산기(GCP Pricing Calculator)**를 활용하여 최적의 사양과 최저 비용 고안.
-- **실험 구현 프로젝트**: **GCP Cloud Run** 또는 **GCP Compute Engine**을 활용하되, 항상 **COST 최우선**으로 컴퓨팅 자원을 선정.
-- **자원 정리 (Automated Cleanup)**: 실험 및 프로세스 완료 후 미사용 VM/컨테이너가 남지 않도록 즉시 정리하거나 자동 종료(Auto-termination) 설정.
+## 2. Infrastructure as Code (IaC), Security & Cost First
+- **IaC (Infrastructure as Code)**: **Terraform** must be prioritized for infrastructure provisioning.
+- **TF State**: Local state management is prohibited. Configure **Remote Backend and State Locking** appropriate for the deployment environment.
+- **Security & Secret Management**: Hardcoding secrets is strictly prohibited. Secrets, credentials, and sensitive tokens must never be committed to repository code or state files. Configure and modify security settings based on the Security Agent manual and platform secret managers.
+- **GCP Pricing Calculator & FinOps CLI**:
+  - Prioritize the globally installed **GCP Pricing Calculator MCP Server & CLI Tool (`gcp-calculator-mcp`, https://github.com/Mireu-workflow/gcp-calculator-cli)** when designing infrastructure, estimating quotes, or calculating costs for Google Cloud services (Compute Engine, Cloud Run, GKE, Cloud SQL, BigQuery, Storage).
+  - Enforce a self-contained, CLI-First and MCP-ready design capable of executing directly in terminal/shell environments or via MCP stdio protocol.
+- **Experimental Projects**: Utilize **GCP Cloud Run** or **GCP Compute Engine**, always prioritizing **COST FIRST** when selecting compute resources.
+- **Automated Cleanup**: Ensure unused VMs/containers are torn down immediately or configured with auto-termination upon completion of experiments or jobs.
 
-## 3. 프로세스 모니터링, 로깅 및 알림 (Logging, Monitoring & Notification)
-- **아키텍처 로깅 표준**:
-  - App/DB 연동 환경: Log4j 형태(레벨링/구조화 로깅) 적용.
-  - 파이프라인/스크립트 환경: Jenkins 형태(단계별 status.log + 상세 processing.log)로 이원화.
-- **장시간 프로세스 (Long-Running Tasks)**:
-  - 실행 시간이 긴 작업 진행 시 **1시간 간격** 및 **프로세스 완료/종료 시점**에 상태(Status) 알림 전송.
-  - 모니터링 및 알림 채널: **GCP Cloud Monitoring** (Alerting Policy, Notification Channels 및 로그 기반 지표) 연동 및 활용.
-- **예외 발생 즉시 알림**: 작업 실패 또는 에러 발생 시 1시간을 기다리지 않고 GCP Cloud Monitoring 알람(Log-based Alerting Policy)을 통해 즉시 에러 로그(Tail output)와 함께 알림 트리거.
-- **우선순위 기반 VM 자율 셧다운 및 디렉토리 정리 (Priority-based VM Shutdown & Brain Cleanup)**:
-  - **0순위 (작업 완료 직후 자율 종료)**: 무인 작업 시 `/tmp/antigravity_task.lock`으로 워치독 차단. 작업 100% 완료 후 `safe_vm_shutdown.sh` 자율 호출.
-  - **1순위 (30분 유휴 감지 안전망)**: 크론탭 5분 주기 `idle_shutdown_watchdog.sh`가 SSH, 빌드, 락 부재 시 30분 연속 유휴 확인 후 안전 셧다운 트리거.
-  - **공통 안전 루틴**: Brain zip 압축 & Google Drive(`gdrive:VM_Backup/brain_archive`) 백업, 듀얼 로깅, `systemctl poweroff` 실행. 고정 스케줄 `poweroff_vm.sh`는 제외/비활성화.
+## 3. Logging, Monitoring & Notification
+- **Architecture Logging Standard**:
+  - Application/Database environments: Apply structured Log4j-style logging with log levels.
+  - Pipeline/Script environments: Dual-logging standard following Jenkins style (step-by-step `status.log` + detailed `processing.log`).
+- **Long-Running Tasks**:
+  - Dispatch status notifications at **1-hour intervals** and upon **task completion/termination**.
+  - Monitoring & Alerting Channel: Utilize **GCP Cloud Monitoring** (Alerting Policies, Notification Channels, and Log-based Metrics).
+- **Immediate Error Notification**: On job failure or exception, trigger an immediate alert via GCP Cloud Monitoring (e.g., Log-based Alerting Policy) with the error tail log without waiting for the 1-hour interval.
+- **Priority-based VM Autonomous Shutdown & Brain Cleanup**:
+  - **Priority 0 (Immediate Autonomous Shutdown on Task Completion)**: For unattended/nightly tasks, the agent creates `/tmp/antigravity_task.lock` during execution to shield against watchdog intervention. Upon 100% completion and final response delivery, execute safe shutdown routine if configured.
+  - **Priority 1 (30-Minute Idle Watchdog Safety Net)**: An autonomous watchdog runs via crontab every 5 minutes. If no task lock exists, no SSH/interactive session is active, and no background build/eval jobs exist for 30 consecutive minutes, safe shutdown triggers.
+  - **Common Safe Shutdown Routine & Brain Cleanup**: Prior to poweroff, automatically archive `brain/` directories into `*.zip`, sync backups, write Jenkins-style dual-logs (`status.log` + `processing.log`), and execute poweroff/cleanup to eliminate idle compute costs.
 
-## 4. 머신러닝/딥러닝 및 MLOps (ML/DL & MLOps)
-- **Model & Dataset**: 릴리즈 시 **Hugging Face(HF) Model Hub**에 모델 업로드. 안정성 검증 완료된 데이터셋은 **HF Datasets**에 업로드.
+## 4. Machine Learning, Deep Learning & MLOps
+- **Model & Dataset**: Upload validated models to the **Hugging Face (HF) Model Hub** upon release. Upload verified datasets to **HF Datasets**.
+- **Backup (MLflow)**: Leverage Hugging Face features upon completion to establish complete backup mirrors of MLflow tracking history and artifacts.
 
-## 5. 피그마 MCP 및 UI 일치도 규칙 (Figma_MCP & UI_Fidelity)
-- **Target**: 캔버스 전체 파싱 절대 금지. `Copy link to selection`으로 특정 노드 ID 타겟팅 필수.
-- **Node ID**: `-`를 `:`로 변환, `/design/` 대신 `/file/` 경로 호환성 확보.
-- **Hierarchy**: 문서 -> 선택 ID 내부(오토레이아웃 속성 중심)로 계층적 탐색.
-- **Payload**: `layoutMode`, `itemSpacing`, `padding*`, `style`, `fills` 유지. 베지에 곡선 등 메타데이터 제외.
-- **Fidelity**: UI/UX 리디자인 및 임의 속성 추론 절대 금지 (Zero Creative Liberty).
-- **AutoLayout**: `HUG`(`w-fit`), `FILL`(`flex-1`/`w-full`), `FIXED`(`w-[Npx]`) 엄격 적용.
-- **Tailwind**: 어림잡기 금지, `gap-[Npx]`, `p-[Npx]` 등 대괄호 기반 정확한 수치 매핑 필수.
-- **Workflow**: 1단계 토큰 추출(Token Extraction), 2단계 레이아웃 구조 조립(Structural Assembly) 분리 진행.
-- **Cross-Check**: VLM(Visual-Language Model) 활용하여 렌더링 이미지와 코드의 100% 일치 교차 검증.
+## 5. Figma MCP & UI Fidelity Rules
+- **Target**: Parsing the entire canvas is strictly prohibited. Always target specific node IDs via `Copy link to selection`.
+- **Node ID**: Replace `-` with `:`, and ensure `/file/` path compatibility instead of `/design/`.
+- **Hierarchy**: Hierarchically traverse from document root into the selected node ID (focusing on autolayout properties).
+- **Payload**: Retain `layoutMode`, `itemSpacing`, `padding*`, `style`, and `fills`. Exclude non-essential metadata such as bezier curves.
+- **Fidelity**: UI/UX redesign or arbitrary property guessing is strictly forbidden (Zero Creative Liberty).
+- **AutoLayout**: Strictly map `HUG` (`w-fit`), `FILL` (`flex-1`/`w-full`), and `FIXED` (`w-[Npx]`).
+- **Tailwind**: No estimations; explicitly use bracket notation for exact measurements (`gap-[Npx]`, `p-[Npx]`).
+- **Workflow**: Separate work into Stage 1 Token Extraction and Stage 2 Structural Assembly.
+- **Cross-Check**: Validate 100% visual fidelity between the rendered image and generated code using Visual-Language Models (VLM).
 
-## 6. Git 워크플로우, GitOps 및 지식 공유 (Git_Workflow, GitOps & Knowledge Sharing)
-- **브랜치 전략 (Branch Strategy)**: **GitFlow 방법론** 엄격 준수 (`main`, `develop`, `feature`, `release`, `hotfix`).
-- **릴리즈 전략 (Release)**: 릴리즈 진행 시 **GitOps 파이프라인**을 최대한 활용.
-- **적용 대상 (Target Platforms & CLIs)**:
+## 6. Git Workflow, GitOps & Knowledge Sharing
+- **Branch Strategy**: Strictly follow **GitFlow methodology** (`main`, `develop`, `feature`, `release`, `hotfix`).
+- **Release Strategy**: Maximize utilization of **GitOps pipelines** during release cycles.
+- **Target Platforms & CLIs**:
   - **GitHub**: `gh` CLI (`gh issue create/view/comment`, git-based wiki, `git push`)
   - **GitLab**: `glab` CLI (`glab issue create/view/note`, wiki API/git wiki, `git push`)
   - **Hugging Face Hub**: `hf` CLI (`hf discussions create/info/comment/close`, repo docs, `git push` / `hf upload`)
-- **논의 내용 및 구현 목적/사항 공유 원칙 (Discussion & Knowledge Sharing)**:
-  - 개발/수정 과정에서 논의된 기술적 검토 내용, 설계 의사결정(Design Decision), 대안 검토, 그리고 구현 목적(Purpose/Objective)과 실제 구현 사항(Implementation Details)은 세션/로컬 대화에만 남겨두지 않고 **반드시 원격 저장소의 이슈(Issue/Discussions) 또는 위키(Wiki)를 통해 기록하고 공유**해야 한다.
-- **사전 검증 원칙 (Verification First)**:
-  - 장애/버그 해결 및 기능 추가 시 원인 분석(RCA), 코드 구현, 로컬/원격 빌드 및 실제 데이터/환경 기반 검증을 100% 완료한 후 이슈 등록, 커밋, 푸시를 진행할 것.
-- **플랫폼별 이슈/토론 및 코멘트 등록 표준 (Structured Issue & Discussion Workflow)**:
-  - 이슈 템플릿: `[1. 개요 및 목적, 2. 논의 및 의사결정 사항, 3. 분석된 문제점, 4. 구현 및 수정 상세, 5. 검증 결과]` 필수 적용 및 CLI로 선등록 관리.
-- **위키(Wiki) 및 아키텍처 문서화 표준 (Wiki / Architecture Documentation Workflow)**:
-  - 전체 시스템 구조, 파이프라인 데이터 흐름, 영구 참조 가이드는 위키에 페이지를 생성하거나 갱신하여 문서화.
-- **커밋 메시지 표준 및 이슈 연동 (Conventional Commits with Issue Linking)**:
-  - Conventional Commits 형식 엄격 준수: `<type>(<scope>): <summary> (#<issue_iid>)`
-  - 커밋 하단(Footer)에 이슈 자동 종료 키워드 필수 명시 (`Closes #<issue_iid>`).
+- **Knowledge Sharing & Documentation Principle**:
+  - All technical investigations, architectural design decisions (ADR), alternatives evaluated, project objectives, and implementation details discussed during development must be documented and shared via **remote repository Issues/Discussions or Wiki pages**, rather than left only in local conversation sessions.
+- **Verification First Principle**:
+  - When fixing bugs or adding features, complete root cause analysis (RCA), code implementation, local/remote builds, and end-to-end verification against real data/environments before creating issues, committing, or pushing code.
+- **Structured Issue & Discussion Workflow**:
+  - Mandatory Issue Template: `[1. Overview & Purpose, 2. Discussions & Decisions, 3. Analyzed Issues, 4. Implementation Details, 5. Verification Results]`. Create and manage issues via CLI beforehand.
+- **Wiki / Architecture Documentation Workflow**:
+  - Document overall system architectures, pipeline data flows, and permanent reference guides in dedicated Wiki pages or repo documentation.
+- **Conventional Commits with Issue Linking**:
+  - Strictly adhere to Conventional Commits: `<type>(<scope>): <summary> (#<issue_iid>)`.
+  - Include issue closing keywords in the commit footer (`Closes #<issue_iid>`).
 
-## 7. 회의록 및 구현 아이디어 이슈화 & 프로젝트 매니저 지정 규칙 (Meeting Minutes, Ideas as Issues & PM Governance)
-- **회의록 및 구현 아이디어의 이슈(Issue) 등록 의무화**:
-  - 프로젝트 설계, 아키텍처 결정 레코드(ADR), 구현 회의록(Meeting Minutes), 차세대 구현 아이디어(Implementation Ideas)는 반드시 원격 저장소의 공식 이슈(Issue / Discussions)로 등록하고 위키/문서(`docs/`, `README.md`)와 상호 링크하여 관리할 것.
-- **프로젝트 매니저 및 구현 책임자 단독 지정 원칙**:
-  - 모든 프로젝트의 이슈 생성, 구현 담당자(Assignee), 프로젝트 매니저(PM), 작업 승인자는 오직 **`limmireu1214@gmail.com`** (GitLab: `@mireu-lab`, GitHub: `@Mireu-Lab`) 단독으로만 지정하여 등록해야 한다.
-  - 이슈 본문 메타데이터 헤더에 표준 양식 명시 필수:
+## 7. Meeting Minutes, Ideas as Issues & PM Governance
+- **Mandatory Issue Tracking for Minutes & Ideas**:
+  - Project architecture designs, ADRs, meeting minutes, and next-generation implementation ideas must be formally registered as remote repository Issues or Discussions, with cross-links to Wiki/documentation (`docs/`, `README.md`).
+- **Sole Project Manager & Implementation Owner**:
+  - The creator, assignee, Project Manager (PM), and reviewer for all project issues must be exclusively assigned to **`limmireu1214@gmail.com`** (GitLab: `@mireu-lab`, GitHub: `@Mireu-Lab`).
+  - Mandatory metadata header in the issue body:
     ```markdown
-    * **프로젝트 매니저 (Project Manager)**: limmireu1214@gmail.com
-    * **구현 책임자 (Implementation Owner)**: limmireu1214@gmail.com
+    * **Project Manager**: limmireu1214@gmail.com
+    * **Implementation Owner**: limmireu1214@gmail.com
     ```
-  - CLI를 통한 이슈 생성 시에도 반드시 `--assignee` 옵션(GitLab: `glab issue create ... --assignee mireu-lab`, GitHub: `gh issue create ... --assignee Mireu-Lab`)을 지정하여 해당 계정으로 공식 할당을 완료해야 한다.
+  - When creating issues via CLI, always include the `--assignee` flag (GitLab: `glab issue create ... --assignee mireu-lab`, GitHub: `gh issue create ... --assignee Mireu-Lab`) to complete formal assignment.

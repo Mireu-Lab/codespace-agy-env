@@ -13,3 +13,6 @@ brain/
 *.pem
 *.token
 credentials.json
+
+_config/
+todo.md

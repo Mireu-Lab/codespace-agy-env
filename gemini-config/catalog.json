@@ -1,0 +1,807 @@
+[
+  {
+    "category": "Compute",
+    "main_product": "Compute Engine",
+    "sub_service": "Virtual Machines (VM Instances)",
+    "service_type": "IaaS (Virtual Machines)",
+    "description": "Customizable virtual machines with diverse vCPU, memory, and storage configurations (General-purpose E2/N2/N4, Compute-optimized C3/C4, Memory-optimized M3, Accelerator-optimized A3)."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Compute Engine",
+    "sub_service": "Spot VMs",
+    "service_type": "IaaS (Preemptible / Spot Resources)",
+    "description": "Affordable ephemeral virtual machines utilizing spare compute capacity at up to 91% discount, subject to preemption."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Compute Engine",
+    "sub_service": "Shielded VMs & Confidential VMs",
+    "service_type": "IaaS (Confidential / Shielded Security VMs)",
+    "description": "Hardened virtual machines offering hardware-based secure boot (UEFI, vTPM) and in-memory encryption powered by AMD SEV / Intel TDX."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Compute Engine",
+    "sub_service": "Sole-tenant Nodes",
+    "service_type": "IaaS (Dedicated Physical Hosts)",
+    "description": "Dedicated physical Compute Engine servers for exclusive single-tenant use, satisfying licensing (BYOL) and compliance isolation."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Google Kubernetes Engine (GKE)",
+    "sub_service": "GKE Standard",
+    "service_type": "CaaS (Managed Kubernetes)",
+    "description": "Enterprise managed Kubernetes service providing granular control over worker node VM configurations, OS images, and cluster networking."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Google Kubernetes Engine (GKE)",
+    "sub_service": "GKE Autopilot",
+    "service_type": "Serverless CaaS (Automated Node Management)",
+    "description": "Fully managed serverless Kubernetes mode where Google automates node provisioning and management with per-pod resource billing."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Google Kubernetes Engine (GKE)",
+    "sub_service": "GKE Enterprise (formerly Anthos)",
+    "service_type": "Multicloud & Hybrid CaaS",
+    "description": "Unified enterprise management platform for running and enforcing governance across on-premises, multicloud (AWS, Azure), and GCP Kubernetes clusters."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Cloud Run",
+    "sub_service": "Cloud Run Services",
+    "service_type": "Serverless Containers (Scale-to-Zero)",
+    "description": "Fully managed serverless container runtime that scales from zero to thousands of instances automatically in response to HTTP/gRPC requests."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Cloud Run",
+    "sub_service": "Cloud Run Jobs",
+    "service_type": "Serverless Batch Job Runtime",
+    "description": "Serverless container execution platform designed for asynchronous parallel batch jobs and data processing without listening web servers."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Cloud Run",
+    "sub_service": "Cloud Run Functions (formerly Cloud Functions v2)",
+    "service_type": "FaaS (Serverless Functions)",
+    "description": "Event-driven serverless function execution platform that runs lightweight code snippets triggered by Cloud Storage, Pub/Sub, or HTTP events."
+  },
+  {
+    "category": "Compute",
+    "main_product": "App Engine",
+    "sub_service": "Standard Environment",
+    "service_type": "PaaS (Fully Managed Web Runtime)",
+    "description": "Fully managed platform as a service (PaaS) for deploying applications in sandboxed runtimes with rapid zero-to-peak autoscaling."
+  },
+  {
+    "category": "Compute",
+    "main_product": "App Engine",
+    "sub_service": "Flexible Environment",
+    "service_type": "PaaS (Docker Container-based)",
+    "description": "Flexible PaaS running applications inside customized Docker containers with support for background threads and custom libraries."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Batch",
+    "sub_service": "Google Cloud Batch",
+    "service_type": "Fully Managed Batch Job Scheduler",
+    "description": "Fully managed batch scheduler that automatically provisions VM resources, queues jobs, and executes batch computing and simulation workloads."
+  },
+  {
+    "category": "Compute",
+    "main_product": "Google Cloud VMware Engine (GCVE)",
+    "sub_service": "GCVE",
+    "service_type": "Dedicated VMware Bare Metal Engine",
+    "description": "Dedicated bare-metal infrastructure running VMware SDDC (vSphere, vCenter, NSX, vSAN) natively integrated with GCP services."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Cloud Storage",
+    "sub_service": "Standard Storage",
+    "service_type": "Global Scalable Object Storage",
+    "description": "High-durability (99.999999999%) global object storage with low latency for frequently accessed hot data and digital assets."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Cloud Storage",
+    "sub_service": "Nearline / Coldline / Archive",
+    "service_type": "Cold Storage Tier (Infrequent Access & Archival)",
+    "description": "Cost-optimized storage tiers (Nearline: monthly, Coldline: quarterly, Archive: yearly) for long-term backup and compliance archiving."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Cloud Storage",
+    "sub_service": "Cloud Storage Autoclass",
+    "service_type": "Intelligent Storage Tiering",
+    "description": "Intelligent automated tiering that monitors data access patterns and transitions objects between Standard, Nearline, Coldline, and Archive."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Persistent Disk",
+    "sub_service": "Standard / Balanced / SSD / Extreme PD",
+    "service_type": "Block Storage (Persistent Disks)",
+    "description": "Network-attached persistent block storage for VMs and containers: Standard HDD, Balanced SSD ($0.10/GB), Performance SSD ($0.17/GB), and Extreme PD."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Persistent Disk",
+    "sub_service": "Google Cloud Hyperdisk",
+    "service_type": "Next-Gen Ultra-High Performance Block Storage",
+    "description": "Next-generation block storage allowing independent scaling of capacity, IOPS, and throughput for mission-critical enterprise workloads."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Local SSD",
+    "sub_service": "Local NVMe SSD",
+    "service_type": "Ephemeral High-Performance NVMe SSD Storage",
+    "description": "High-performance NVMe SSDs physically attached to the host server delivering millions of IOPS and sub-millisecond ephemeral latency."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Filestore",
+    "sub_service": "Basic / High Scale / Enterprise",
+    "service_type": "Fully Managed NFS Network-Attached Storage",
+    "description": "Fully managed network-attached storage (NAS) supporting NFSv3 for multi-client concurrent read/write across VMs and GKE pods."
+  },
+  {
+    "category": "Storage",
+    "main_product": "NetApp Volumes",
+    "sub_service": "Google Cloud NetApp Volumes",
+    "service_type": "Enterprise Multi-Protocol File Storage (NFS/SMB)",
+    "description": "High-performance enterprise file storage powered by NetApp ONTAP supporting NFSv3, NFSv4, and SMB protocols."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Storage Transfer Service",
+    "sub_service": "Storage Transfer Service",
+    "service_type": "Data Transfer & Migration Service",
+    "description": "Fully managed data transfer service for migrating large-scale data from AWS S3, Azure Blob, HTTP sources, or on-premises storage into Cloud Storage."
+  },
+  {
+    "category": "Storage",
+    "main_product": "Transfer Appliance",
+    "sub_service": "Transfer Appliance",
+    "service_type": "Physical Data Transport Appliance",
+    "description": "Ruggedized encrypted physical storage appliances shipped directly to your datacenter to migrate petabytes of offline data into GCP."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud SQL",
+    "sub_service": "Cloud SQL for MySQL / PostgreSQL / SQL Server",
+    "service_type": "Fully Managed Relational Database (RDBMS)",
+    "description": "Fully managed relational database service for MySQL, PostgreSQL, and SQL Server with automated backups, replication, patching, and high availability."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud SQL",
+    "sub_service": "Cloud SQL Enterprise Plus",
+    "service_type": "Ultra-High Performance Managed RDBMS",
+    "description": "High-performance enterprise edition for Cloud SQL offering integrated SSD caching, up to 3x read throughput, and a 99.99% availability SLA."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud Spanner",
+    "sub_service": "Cloud Spanner Core",
+    "service_type": "Globally Distributed Relational Database (ACID)",
+    "description": "Mission-critical globally distributed relational database providing unlimited horizontal scalability, ACID transactions, and up to 99.999% SLA."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud Spanner",
+    "sub_service": "Spanner Graph",
+    "service_type": "Graph Database Engine (ISO GQL Standard)",
+    "description": "Integrated graph database capabilities within Cloud Spanner executing ISO GQL graph traversals alongside transactional relational tables."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud Spanner",
+    "sub_service": "Spanner Vector Search",
+    "service_type": "Inline Vector Search Engine",
+    "description": "Built-in vector search inside Cloud Spanner enabling K-nearest neighbor similarity queries transactional alongside operational data."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud Bigtable",
+    "sub_service": "Cloud Bigtable Core",
+    "service_type": "NoSQL (Wide-Column Database)",
+    "description": "Low-latency petabyte-scale NoSQL wide-column database powering high-throughput analytical and operational engines like Google Search."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Cloud Bigtable",
+    "sub_service": "Bigtable Vector Search & Change Streams",
+    "service_type": "Big Data NoSQL Extensions (CDC & Vector)",
+    "description": "Real-time Change Data Capture (CDC) streaming and inline vector similarity search extensions for high-throughput Bigtable architectures."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Firestore",
+    "sub_service": "Firestore Native Mode",
+    "service_type": "NoSQL (Document Database)",
+    "description": "Scalable NoSQL document database providing real-time data sync, offline client SDK support, and ACID transactions for web and mobile apps."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Firestore",
+    "sub_service": "Firestore Datastore Mode",
+    "service_type": "NoSQL (High-Throughput Backend Mode)",
+    "description": "High-throughput server-side NoSQL database mode compatible with legacy App Engine Datastore workloads."
+  },
+  {
+    "category": "Databases",
+    "main_product": "AlloyDB for PostgreSQL",
+    "sub_service": "AlloyDB Managed",
+    "service_type": "Ultra-High Performance Enterprise PostgreSQL",
+    "description": "Fully managed PostgreSQL-compatible database offering disaggregated compute/storage and columnar processing for 4x transactional and 100x analytical speed."
+  },
+  {
+    "category": "Databases",
+    "main_product": "AlloyDB for PostgreSQL",
+    "sub_service": "AlloyDB AI",
+    "service_type": "AI-Optimized PostgreSQL Database Engine",
+    "description": "Specialized PostgreSQL edition optimized with up to 10x accelerated pgvector indexing and direct in-database Vertex AI embedding queries."
+  },
+  {
+    "category": "Databases",
+    "main_product": "AlloyDB for PostgreSQL",
+    "sub_service": "AlloyDB Omni",
+    "service_type": "Downloadable Software Edition (Hybrid/Multicloud)",
+    "description": "Deployable containerized AlloyDB database runtime for self-hosted deployment on-premises, edge devices, or third-party cloud environments."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Memorystore",
+    "sub_service": "Memorystore for Redis / Redis Cluster",
+    "service_type": "In-Memory Key-Value Data Store (Redis)",
+    "description": "Ultra-low latency in-memory data store for Redis providing managed clustering, automatic failover, and high availability."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Memorystore",
+    "sub_service": "Memorystore for Memcached",
+    "service_type": "In-Memory Key-Value Cache (Memcached)",
+    "description": "Fully managed distributed in-memory Memcached key-value service for offloading repetitive query traffic from relational databases."
+  },
+  {
+    "category": "Databases",
+    "main_product": "Database Migration Service (DMS)",
+    "sub_service": "Database Migration Service",
+    "service_type": "Database Migration Service (DMS)",
+    "description": "Near-zero downtime serverless database migration service for replicating Oracle, SQL Server, MySQL, and PostgreSQL into Cloud SQL and AlloyDB."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "BigQuery",
+    "sub_service": "BigQuery Core (Data Warehouse)",
+    "service_type": "Serverless Enterprise Data Warehouse",
+    "description": "Serverless enterprise cloud data warehouse for querying petabytes of structured and semi-structured data with ANSI SQL at high velocity."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "BigQuery",
+    "sub_service": "BigQuery Studio",
+    "service_type": "Unified Analytics Collaboration Workspace",
+    "description": "Collaborative unified web analytics workspace integrating SQL editors, Python notebooks, and PySpark assets under centralized governance."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "BigQuery",
+    "sub_service": "BigQuery ML (BQML)",
+    "service_type": "SQL-based Machine Learning Engine",
+    "description": "In-warehouse machine learning enabling model creation, training, evaluation, and Vertex AI LLM invocation directly using standard SQL queries."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "BigQuery",
+    "sub_service": "BigQuery Omni",
+    "service_type": "Multicloud Data Analytics Engine",
+    "description": "Multicloud data analytics engine running cross-cloud BigQuery queries directly on AWS S3 and Azure Blob Storage without data movement."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "BigQuery",
+    "sub_service": "BigQuery BI Engine",
+    "service_type": "In-Memory Query Acceleration Engine",
+    "description": "Fast in-memory analysis service integrated with BigQuery providing sub-second interactive query response times for Looker and BI tools."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "BigQuery",
+    "sub_service": "BigQuery Data Transfer Service (DTS)",
+    "service_type": "Automated Data Ingestion & Transfer",
+    "description": "Automated scheduled ingestion service importing scheduled feeds from Google Ads, YouTube, Salesforce, Amazon S3, and Teradata into BigQuery."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Dataproc",
+    "sub_service": "Dataproc on Compute Engine / GKE",
+    "service_type": "Managed Open-Source Big Data Cluster (Hadoop/Spark)",
+    "description": "Managed Apache Spark, Hadoop, Presto, and Hive clusters provisioned and dynamically autoscaled in under 90 seconds."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Dataproc",
+    "sub_service": "Dataproc Serverless",
+    "service_type": "Serverless Apache Spark Runtime",
+    "description": "Serverless Spark execution service that runs PySpark and Spark SQL batch applications without requiring cluster provisioning or tuning."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Dataflow",
+    "sub_service": "Dataflow Core",
+    "service_type": "Serverless Unified Stream/Batch Pipeline",
+    "description": "Fully managed Apache Beam streaming and batch data processing pipeline guaranteeing exactly-once processing semantics."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Dataflow",
+    "sub_service": "Dataflow Prime",
+    "service_type": "Intelligent Data Processing Optimization",
+    "description": "Advanced Dataflow edition providing ML-driven pipeline optimization, diagnostic resource bottleneck detection, and auto-tuning."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Pub/Sub",
+    "sub_service": "Pub/Sub",
+    "service_type": "Global Asynchronous Messaging Broker (Pub/Sub)",
+    "description": "Globally distributed asynchronous messaging service ingestion millions of messages per second with automatic scaling and fan-out delivery."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Pub/Sub",
+    "sub_service": "Pub/Sub Lite",
+    "service_type": "Zonal High-Throughput Low-Cost Messaging",
+    "description": "Zonal partition-based high-volume messaging queue designed for cost-sensitive high-throughput streaming and log telemetry."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Managed Service for Apache Kafka",
+    "sub_service": "Apache Kafka on GCP",
+    "service_type": "Fully Managed Apache Kafka Service",
+    "description": "Fully managed Apache Kafka service running open-source Kafka client pipelines natively without manual broker or KRaft infrastructure maintenance."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Looker",
+    "sub_service": "Looker Enterprise",
+    "service_type": "Semantic Data Modeling & Modern BI Platform",
+    "description": "Enterprise business intelligence platform utilizing LookML semantic data modeling to deliver a single source of truth across all metrics."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Looker",
+    "sub_service": "Looker Studio (formerly Data Studio)",
+    "service_type": "Interactive Cloud Dashboard & Reporting Tool",
+    "description": "Intuitive drag-and-drop cloud reporting and interactive dashboard visualization tool connecting seamlessly to hundreds of data sources."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Dataplex",
+    "sub_service": "Dataplex Governance & Catalog",
+    "service_type": "Data Fabric, Metadata Catalog & Governance",
+    "description": "Intelligent data fabric providing automated metadata discovery, unified cataloging, end-to-end data lineage, and automated quality auditing."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Cloud Data Fusion",
+    "sub_service": "Cloud Data Fusion",
+    "service_type": "Visual No-Code Data Pipeline & ETL Tool",
+    "description": "Visual, code-free data integration service built on CDAP with hundreds of pre-built connectors and transformation plugins."
+  },
+  {
+    "category": "Analytics",
+    "main_product": "Cloud Composer",
+    "sub_service": "Cloud Composer",
+    "service_type": "Managed Workflow Orchestration (Apache Airflow)",
+    "description": "Managed workflow orchestration service built on Apache Airflow to author, schedule, and monitor complex cross-cloud data pipelines as code (DAGs)."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Gemini on Vertex AI",
+    "service_type": "Multimodal Foundation Models (LLM)",
+    "description": "State-of-the-art multimodal foundation models (Gemini 1.5 Flash / Pro) handling text, high-res images, audio, video, and code across massive context windows."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Imagen on Vertex AI",
+    "service_type": "Text-to-Image Generation & Editing Models",
+    "description": "Generative text-to-image foundation model providing high-resolution photorealistic image creation, editing, inpainting, and SynthID watermarking."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Veo on Vertex AI",
+    "service_type": "Text-to-Video Generation Models",
+    "description": "Generative video foundation model producing cinematic, high-definition video clips with consistent visual continuity and cinematic controls."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Studio",
+    "service_type": "Prompt Engineering & Model Tuning Lab",
+    "description": "Interactive web console for prototyping prompts, comparing foundation model outputs, tuning parameters, and running LoRA fine-tuning."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Model Garden",
+    "service_type": "Open-Source & Third-Party Model Hub",
+    "description": "Curated model catalog offering one-click deployment and fine-tuning for over 150 first-party, open-source (Gemma, Llama), and partner models."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Search & Conversation (Agent Builder)",
+    "service_type": "Enterprise Generative RAG & AI Agent Builder",
+    "description": "Turnkey enterprise RAG search and conversational agent building platform ground on private documents without hallucination."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Vector Search (formerly Matching Engine)",
+    "service_type": "Massive Scalable Vector Search Engine",
+    "description": "Hyper-scalable distributed vector database delivering sub-millisecond approximate nearest neighbor (ANN) similarity search across billions of embeddings."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Colab Enterprise",
+    "service_type": "Secure Enterprise Collaborative Data Science Notebook",
+    "description": "Secure managed Google Colab notebook environment integrated with VPC Service Controls, private networking, and enterprise IAM governance."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Workbench",
+    "service_type": "Managed Enterprise JupyterLab Environment",
+    "description": "Enterprise JupyterLab data science workstation with native Git integration, pre-installed ML frameworks (PyTorch, TensorFlow), and GPU acceleration."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Feature Store",
+    "service_type": "Centralized ML Feature Store",
+    "description": "Centralized repository to discover, share, version, and serve machine learning features with zero skew between training and inference."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Pipelines",
+    "service_type": "Serverless MLOps Workflow Orchestration",
+    "description": "Serverless MLOps orchestration platform built on Kubeflow Pipelines and TFX to automate reproducible end-to-end machine learning workflows."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Custom Training",
+    "service_type": "Distributed Deep Learning Training Cluster",
+    "description": "Scalable distributed training service for custom deep learning workloads on multi-node NVIDIA GPUs (A100, H100) and Cloud TPU v4/v5 clusters."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI Model Registry & Endpoints",
+    "service_type": "Model Registry & Scalable Serving Endpoints",
+    "description": "Centralized ML model registry tracking model versions, artifacts, and deploying to low-latency auto-scaling real-time inference endpoints."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Vertex AI",
+    "sub_service": "Vertex AI AutoML",
+    "service_type": "No-Code Automated Machine Learning (AutoML)",
+    "description": "Automated machine learning platform allowing non-experts to build high-performance custom vision, language, and tabular models without coding."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Gemini Code Assist",
+    "sub_service": "Gemini Code Assist (formerly Duet AI)",
+    "service_type": "AI Developer Coding Assistant",
+    "description": "AI-powered coding collaborator in VS Code, JetBrains IDEs, and Cloud Shell providing code generation, explanation, testing, and vulnerability remediation."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Document AI",
+    "sub_service": "Document AI & Custom Document Extractor",
+    "service_type": "Intelligent Document Processing (IDP)",
+    "description": "Intelligent document processing combining computer vision and NLP to extract structured key-value data and tables from forms, receipts, and invoices."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Contact Center AI (CCAI)",
+    "sub_service": "Dialogflow CX & Agent Assist",
+    "service_type": "Intelligent Contact Center AI (CCAI)",
+    "description": "Omnichannel customer service suite combining visual conversational agents (Dialogflow CX) and real-time live-agent assistance."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Pre-trained Applied AI Services",
+    "sub_service": "Cloud Vision & Video Intelligence API",
+    "service_type": "Computer Vision & Video Intelligence API",
+    "description": "Pre-trained computer vision APIs for image classification, face/landmark detection, OCR text extraction, and video shot analysis."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Pre-trained Applied AI Services",
+    "sub_service": "Cloud Speech-to-Text & Text-to-Speech",
+    "service_type": "Speech-to-Text & Text-to-Speech API",
+    "description": "Accurate speech recognition transcribing audio in 125+ languages (Chirp model) and natural text-to-speech voice synthesis."
+  },
+  {
+    "category": "AI and Machine Learning (AI/ML)",
+    "main_product": "Pre-trained Applied AI Services",
+    "sub_service": "Cloud Translation & Natural Language API",
+    "service_type": "Natural Language Understanding & Translation API",
+    "description": "Dynamic real-time neural translation and natural language understanding APIs for sentiment analysis, entity extraction, and syntax parsing."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Virtual Private Cloud (VPC)",
+    "sub_service": "VPC Networks & Subnets",
+    "service_type": "Global Software-Defined Virtual Network (VPC)",
+    "description": "Global software-defined network (SDN) spanning all GCP regions with custom subnets, route tables, and firewall rules without external internet hops."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Virtual Private Cloud (VPC)",
+    "sub_service": "Shared VPC",
+    "service_type": "Centralized Multi-Project Network Sharing",
+    "description": "Centralized VPC architecture sharing common subnets across multiple organizational projects while maintaining security boundaries."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Virtual Private Cloud (VPC)",
+    "sub_service": "VPC Service Controls (VPC-SC)",
+    "service_type": "Zero-Trust Security Perimeter & Exfiltration Prevention",
+    "description": "Context-based security perimeters protecting sensitive GCP services (Cloud Storage, BigQuery) to prevent data exfiltration."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Virtual Private Cloud (VPC)",
+    "sub_service": "VPC Network Peering & Flow Logs",
+    "service_type": "VPC Network Peering & Flow Packet Logging",
+    "description": "Private high-bandwidth peering across VPC networks and sampled flow logging for deep traffic analysis and security auditing."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud Load Balancing",
+    "sub_service": "Global External Application Load Balancer",
+    "service_type": "Global HTTP(S) Layer 7 Load Balancing",
+    "description": "Global layer 7 proxy load balancer routing worldwide web traffic via a single Anycast IP to the nearest healthy backend instance."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud Load Balancing",
+    "sub_service": "Regional / Internal Load Balancer",
+    "service_type": "Internal Regional Layer 4 & Layer 7 Load Balancing",
+    "description": "High-throughput regional Layer 4 (TCP/UDP) and Layer 7 (HTTP/S) private load balancing within internal VPC networks."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud CDN",
+    "sub_service": "Cloud CDN",
+    "service_type": "Global Content Delivery Network (CDN)",
+    "description": "Global content delivery network leveraging Google's edge points of presence (PoPs) to cache static and dynamic web content closer to users."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Media CDN",
+    "sub_service": "Media CDN",
+    "service_type": "High-Throughput Video & Streaming CDN",
+    "description": "High-capacity streaming CDN built on Google's YouTube media distribution infrastructure, optimized for 4K/8K video streaming and game delivery."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud Interconnect",
+    "sub_service": "Dedicated / Partner / Cross-Cloud Interconnect",
+    "service_type": "Dedicated Physical Hybrid Interconnect",
+    "description": "Dedicated 10Gbps or 100Gbps physical private fiber connectivity between on-premises datacenters or third-party clouds and Google's network."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud VPN",
+    "sub_service": "Cloud HA VPN",
+    "service_type": "High-Availability IPsec Cloud VPN",
+    "description": "Enterprise-grade IPsec VPN gateway providing 99.99% service availability across redundant encrypted tunnels."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud DNS",
+    "sub_service": "Cloud DNS (Public / Private)",
+    "service_type": "Global Anycast Domain Name System (DNS)",
+    "description": "Global Anycast-powered authoritative DNS hosting service backed by a 100% availability SLA and support for DNSSEC."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Cloud NAT",
+    "sub_service": "Cloud NAT",
+    "service_type": "Network Address Translation Gateway (NAT)",
+    "description": "Managed network address translation gateway allowing private subnet VMs to initiate outbound internet traffic without public IP addresses."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Network Connectivity Center",
+    "sub_service": "Network Connectivity Center (NCC)",
+    "service_type": "Global Network Connectivity Center (NCC)",
+    "description": "Central management hub connecting hybrid WAN topologies, SD-WAN appliances, VPNs, and Interconnects into a unified cloud backbone."
+  },
+  {
+    "category": "Networking",
+    "main_product": "Network Intelligence Center",
+    "sub_service": "Network Intelligence Center",
+    "service_type": "Comprehensive Network Observability & Diagnostics",
+    "description": "Comprehensive network observability suite offering interactive topology mapping, connectivity testing, and firewall audit diagnostics."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Cloud IAM",
+    "sub_service": "Cloud IAM & IAM Recommender",
+    "service_type": "Identity & Role-Based Access Control (IAM)",
+    "description": "Fine-grained role-based access control (RBAC), workload identity federation, conditional access, and automated least-privilege recommenders."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Cloud KMS",
+    "sub_service": "Cloud KMS / Cloud HSM / Cloud EKM",
+    "service_type": "Cryptographic Key Management (Cloud KMS / HSM / EKM)",
+    "description": "Central cryptographic key management supporting software keys, FIPS 140-2 Level 3 hardware security modules (HSM), and External Key Management (EKM)."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Secret Manager",
+    "sub_service": "Secret Manager",
+    "service_type": "Centralized Secrets & Credentials Vault",
+    "description": "Secure centralized secrets vault for storing, versioning, accessing, and automatically rotating API keys, credentials, and certificates."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Cloud Armor",
+    "sub_service": "Cloud Armor & Adaptive Protection",
+    "service_type": "Cloud Web Application Firewall (WAF) & DDoS Defense",
+    "description": "Enterprise web application firewall (WAF) and automated Layer 3/Layer 4 DDoS protection with adaptive ML-based defense against OWASP attacks."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Security Command Center",
+    "sub_service": "SCC (Standard / Enterprise)",
+    "service_type": "Comprehensive Cloud Security & Posture Management (CSPM/CWPP)",
+    "description": "Comprehensive cloud security posture management (CSPM) and workload protection platform detecting vulnerabilities and threats across cloud assets."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Sensitive Data Protection",
+    "sub_service": "Sensitive Data Protection (formerly Cloud DLP)",
+    "service_type": "Sensitive Data Discovery & Redaction (DLP)",
+    "description": "Automated discovery, inspection, classification, and de-identification platform for over 150 types of sensitive data and PII across storage and databases."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Identity-Aware Proxy",
+    "sub_service": "Identity-Aware Proxy (IAP)",
+    "service_type": "Context-Aware Zero-Trust Remote Access Proxy (IAP)",
+    "description": "Zero-trust remote access proxy that verifies user identity and device context before granting access to web applications and VM consoles without a VPN."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Certificate Authority Service",
+    "sub_service": "Certificate Authority Service (CAS)",
+    "service_type": "Managed Private Certificate Authority Service (CAS)",
+    "description": "Highly scalable, customizable private certificate authority service automating digital certificate issuance, lifecycle, and revocation."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Binary Authorization",
+    "sub_service": "Binary Authorization",
+    "service_type": "Software Supply Chain Security & Binary Authorization",
+    "description": "Deploy-time security gate enforcing cryptographic signatures on container images to guarantee only trusted code runs in GKE or Cloud Run."
+  },
+  {
+    "category": "Security & Identity",
+    "main_product": "Chronicle Security Operations",
+    "sub_service": "Chronicle SIEM & SOAR",
+    "service_type": "Cloud-Native Security Information & Event Management (SIEM/SOAR)",
+    "description": "Petabyte-scale cloud-native SIEM and SOAR platform enabling threat hunting, instant telemetry querying, and automated playbook response."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Monitoring",
+    "sub_service": "Cloud Monitoring",
+    "service_type": "Full-Stack Observability & Infrastructure Metrics",
+    "description": "Full-stack observability platform providing infrastructure metrics, customized dashboards, and flexible alerting policies against SLOs."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Logging",
+    "sub_service": "Cloud Logging",
+    "service_type": "Fully Managed Real-Time Log Analytics & Storage",
+    "description": "Fully managed high-throughput logging platform collecting, indexing, and routing millions of audit and application logs in real-time."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Trace & Profiler",
+    "sub_service": "Cloud Trace & Cloud Profiler",
+    "service_type": "Distributed Latency Tracing & Application Profiling",
+    "description": "Distributed latency tracing and continuous low-overhead in-production profiling to eliminate CPU and memory bottlenecks."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Error Reporting",
+    "sub_service": "Cloud Error Reporting",
+    "service_type": "Real-Time Application Exception & Crash Analytics",
+    "description": "Real-time exception aggregation service grouping and notifying developers about application crashes and stack traces."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Build",
+    "sub_service": "Cloud Build",
+    "service_type": "Serverless Automated CI/CD Container Build",
+    "description": "Serverless continuous integration service that executes fast, parallel container image builds, tests, and automated artifact deployments."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Artifact Registry",
+    "sub_service": "Artifact Registry",
+    "service_type": "Universal Package & Container Image Registry",
+    "description": "Universal enterprise artifact repository supporting Docker/OCI container images and language packages (Maven, npm, PyPI) with vulnerability scanning."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Deploy",
+    "sub_service": "Cloud Deploy",
+    "service_type": "Managed Continuous Delivery & Automated Rollbacks",
+    "description": "Managed continuous delivery pipeline offering structured release promotion, canary rollouts, and one-click rollbacks for GKE and Cloud Run."
+  },
+  {
+    "category": "Operations & DevOps",
+    "main_product": "Cloud Workstations",
+    "sub_service": "Cloud Workstations",
+    "service_type": "Managed Secure Cloud Workstations & In-Browser IDE",
+    "description": "Fully managed, secure in-browser cloud workstation environments running inside corporate VPCs with zero local code storage."
+  },
+  {
+    "category": "Hybrid and Multicloud",
+    "main_product": "Google Distributed Cloud (GDC)",
+    "sub_service": "GDC Connected",
+    "service_type": "Hybrid On-Premises Appliances & Edge Infrastructure",
+    "description": "Google-managed hardware appliances deployed into customer on-premises datacenters, connected directly to Google Cloud for hybrid operation."
+  },
+  {
+    "category": "Hybrid and Multicloud",
+    "main_product": "Google Distributed Cloud (GDC)",
+    "sub_service": "GDC Air-gapped",
+    "service_type": "Fully Isolated Air-Gapped Sovereign Cloud Infrastructure",
+    "description": "Completely disconnected, air-gapped sovereign cloud platform enabling enterprise cloud services and Vertex AI in strictly isolated environments."
+  },
+  {
+    "category": "Hybrid and Multicloud",
+    "main_product": "Migrate to Virtual Machines",
+    "sub_service": "Migrate to Virtual Machines (formerly M4CE)",
+    "service_type": "Automated Virtual Machine Migration (V2V)",
+    "description": "High-speed virtual machine migration service transferring on-premises VMware/Hyper-V and other cloud VMs to Compute Engine with minimal downtime."
+  },
+  {
+    "category": "Hybrid and Multicloud",
+    "main_product": "Migrate to Containers",
+    "sub_service": "Migrate to Containers",
+    "service_type": "Automated VM-to-Container Transformation",
+    "description": "Automated modernization tool that extracts and containerizes existing Linux and Windows VM workloads directly into GKE or Cloud Run images."
+  },
+  {
+    "category": "Management & FinOps",
+    "main_product": "Cloud Billing & Cost Management",
+    "sub_service": "Budgets & Cost Alerts",
+    "service_type": "Cost Governance, Budget Alerts & FinOps Advisory",
+    "description": "Cloud financial management (FinOps) platform providing granular cost allocation, proactive budget thresholds, and commitment recommendations."
+  },
+  {
+    "category": "Management & FinOps",
+    "main_product": "Cloud Deployment Manager & Terraform",
+    "sub_service": "Infrastructure as Code (IaC)",
+    "service_type": "Declarative Infrastructure as Code (IaC) Automation",
+    "description": "Declarative infrastructure-as-code automation framework supporting HashiCorp Terraform and Cloud Deployment Manager for automated resource management."
+  }
+]

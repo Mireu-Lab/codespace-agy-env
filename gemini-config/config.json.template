@@ -1,0 +1,18 @@
+{
+  "userSettings": {
+    "cliRemoteControlHostname": "codespace-agy-env",
+    "customThemeSeedsDark": {
+      "background": "#101010",
+      "foregroundOverride": "#FFFFFF",
+      "primary": "#FFC799"
+    },
+    "enableNotificationsForSpecialEvents": false,
+    "globalPermissionGrants": {
+      "allow": [
+        "read_file(__HOME__/.local/bin/clean_brain_archive.sh)",
+        "read_file(__HOME__/.local/bin/gcp-calculator-mcp)"
+      ]
+    },
+    "themeMode": "THEME_MODE_DARK"
+  }
+}

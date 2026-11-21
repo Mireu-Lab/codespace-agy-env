@@ -1,11 +1,5 @@
 {
   "mcpServers": {
-    "cloud-pricing": {
-      "command": "__HOME__/.local/bin/cloud-pricing-mcp",
-      "args": [
-        "server"
-      ]
-    },
     "gcp-calculator": {
       "command": "__HOME__/.local/bin/gcp-calculator-mcp",
       "args": [
@@ -25,33 +19,13 @@
         "--from",
         "google-workspace-mcp",
         "google-workspace-worker"
-      ]
-    },
-    "google-cloud": {
-      "command": "uvx",
-      "args": [
-        "google-cloud-mcp"
-      ]
-    },
-    "kicad": {
-      "command": "uvx",
-      "args": [
-        "kicad-mcp"
-      ]
-    },
-    "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ]
-    },
-    "gitlab": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-gitlab"
-      ]
+      ],
+      "env": {
+        "GOOGLE_WORKSPACE_CLIENT_ID": "",
+        "GOOGLE_WORKSPACE_CLIENT_SECRET": "",
+        "GOOGLE_WORKSPACE_REFRESH_TOKEN": "",
+        "GOOGLE_WORKSPACE_ENABLED_CAPABILITIES": "[\"drive\", \"docs\", \"gmail\", \"calendar\", \"sheets\"]"
+      }
     },
     "memory": {
       "command": "npx",
